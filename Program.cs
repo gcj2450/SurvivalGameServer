@@ -20,7 +20,9 @@ namespace MyApp // Note: actual namespace depends on the project name.
 
             Console.ReadLine();
 
-            // Stop the server
+            // Stop the server !!
+
+
             Console.Write("Server stopping...");
             server.Stop();
             Console.WriteLine("Done!");
