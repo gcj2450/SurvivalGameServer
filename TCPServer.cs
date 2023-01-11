@@ -7,7 +7,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace survival_game_server
+namespace Survival
 {
     class TCPServer : TcpServer
     {

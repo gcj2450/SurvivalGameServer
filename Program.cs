@@ -1,9 +1,8 @@
-﻿using survival_game_server;
-using System;
+﻿using System;
 using System.Net;
 using System.Numerics;
 
-namespace MyApp // Note: actual namespace depends on the project name.
+namespace Survival // Note: actual namespace depends on the project name.
 {
     internal class Program
     {
@@ -20,9 +19,7 @@ namespace MyApp // Note: actual namespace depends on the project name.
 
             Console.ReadLine();
 
-            // Stop the server !!
-
-
+            // Stop the server
             Console.Write("Server stopping...");
             server.Stop();
             Console.WriteLine("Done!");
