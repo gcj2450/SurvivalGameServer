@@ -6,7 +6,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Survival
+namespace SurvivalGameServer
 {
     class TCPSession : TcpSession
     {
@@ -14,7 +14,7 @@ namespace Survival
 
         protected override void OnConnected()
         {
-            Console.WriteLine($"Chat TCP session with Id {Id} connected!");
+            Console.WriteLine($"TCP session with Id {Id} connected!");
 
             // Send invite message
             string message = "Hello from TCP chat! Please send a message or '!' to disconnect the client!";
@@ -23,7 +23,7 @@ namespace Survival
 
         protected override void OnDisconnected()
         {
-            Console.WriteLine($"Chat TCP session with Id {Id} disconnected!");
+            Console.WriteLine($"TCP session with Id {Id} disconnected!");
         }
 
         protected override void OnReceived(byte[] buffer, long offset, long size)
@@ -34,7 +34,7 @@ namespace Survival
 
         protected override void OnError(SocketError error)
         {
-            Console.WriteLine($"Chat TCP session caught an error with code {error}");
+            Console.WriteLine($"TCP session caught an error with code {error}");
         }
     }
 

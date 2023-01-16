@@ -1,13 +1,8 @@
 ﻿using NetCoreServer;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Sockets;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Survival
+namespace SurvivalGameServer
 {
     class TCPServer : TcpServer
     {
@@ -17,7 +12,7 @@ namespace Survival
 
         protected override void OnError(SocketError error)
         {
-            Console.WriteLine($"Chat TCP server caught an error with code {error}");
+            Console.WriteLine($"TCP server caught an error with code {error}");
         }
     }
 }

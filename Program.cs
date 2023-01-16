@@ -1,28 +1,17 @@
-﻿using System;
+﻿using NetCoreServer;
+using System;
 using System.Net;
 using System.Numerics;
 
-namespace Survival // Note: actual namespace depends on the project name.
+namespace SurvivalGameServer
 {
     internal class Program
     {
         static void Main(string[] args)
         {
-            // TCP server port
-            int port = 1111;
-         
-            // Create a new TCP chat server
-            var server = new TCPServer(IPAddress.Any, port);
-
-            // Start the server
-            server.Start();
-
+            Servers.StartServers();            
             Console.ReadLine();
-
-            // Stop the server
-            Console.Write("Server stopping...");
-            server.Stop();
-            Console.WriteLine("Done!");
+            Servers.StopServers();            
         }
     }
 }
