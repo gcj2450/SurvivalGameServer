@@ -14,27 +14,33 @@ namespace SurvivalGameServer
 
         protected override void OnConnected()
         {
-            Console.WriteLine($"TCP session with Id {Id} connected!");
+            Program.Logger.Write(Serilog.Events.LogEventLevel.Information, $"TCP session with Id:{Id} and Endpoint:{Socket.RemoteEndPoint} connected!");
+            
 
             // Send invite message
-            string message = "Hello from TCP chat! Please send a message or '!' to disconnect the client!";
-            SendAsync(message);
+            //string message = "Hello from TCP chat! Please send a message or '!' to disconnect the client!";
+            //SendAsync(message);
         }
 
         protected override void OnDisconnected()
         {
-            Console.WriteLine($"TCP session with Id {Id} disconnected!");
+            Program.Logger.Write(Serilog.Events.LogEventLevel.Information, $"TCP session with Id {Id} disconnected!");
         }
 
         protected override void OnReceived(byte[] buffer, long offset, long size)
         {
-            string message = Encoding.UTF8.GetString(buffer, (int)offset, (int)size);
-            Console.WriteLine("Incoming: " + message);
+            //string message = Encoding.UTF8.GetString(buffer, (int)offset, (int)size);
+            //Console.WriteLine(string.Join('=', Encoding.UTF8.GetBytes(message)));
+            //Console.WriteLine("Incoming: " + message);
+
+            
+            ReceivedDataHandler.HandleData(new ReadOnlySpan<byte>(buffer, 0, (int)size), Id, Socket.RemoteEndPoint);
+            
         }
 
         protected override void OnError(SocketError error)
         {
-            Console.WriteLine($"TCP session caught an error with code {error}");
+            Program.Logger.Write(Serilog.Events.LogEventLevel.Information, $"TCP session caught an error with code {error}");
         }
     }
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Serilog;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -19,14 +20,39 @@ namespace SurvivalGameServer
             tcpServer.Start();
             udpServer.Start();
 
-            Console.Write("started TCP and UDP servers\n");
+            Program.Logger.Write(Serilog.Events.LogEventLevel.Information, "started TCP and UDP servers");
         }
 
         public static void StopServers()
         {
             tcpServer.Stop();
             udpServer.Stop();
-            Console.Write("stopped TCP and UDP servers\n");
+            Program.Logger.Write(Serilog.Events.LogEventLevel.Information, "stopped TCP and UDP servers");
+        }
+
+        public static bool SendTCP(byte[] data, Guid id)
+        {
+            if (tcpServer.FindSession(id) != null)
+            {
+                return tcpServer.FindSession(id).SendAsync(data);
+            }
+            else
+            {
+                return false;
+            }
+            
+        }
+
+        public static bool SendTCP(string data, Guid id)
+        {
+            if (tcpServer.FindSession(id) != null)
+            {
+                return tcpServer.FindSession(id).SendAsync(data);
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

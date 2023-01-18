@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using Serilog;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace SurvivalGameServer
@@ -10,13 +11,12 @@ namespace SurvivalGameServer
         private RSACryptoServiceProvider csp;
 
         public Encryption()
-        {
-
+        {            
             //create keys
             csp = new RSACryptoServiceProvider(2048);
             privateKey = csp.ExportParameters(true);
             publicKey = csp.ExportParameters(false);
-
+            
 
 
             //conver key into string
@@ -114,23 +114,12 @@ namespace SurvivalGameServer
         {
             if (source.Length == 0 || key.Length == 0) return;
 
-            int index = 0;
+            int index = source.Length < key.Length ? source.Length : key.Length;
 
-            for (int i = 6; i < source.Length; i++)
+            for (int i = 0; i < index; i++)
             {
-                source[i] = (byte)(source[i] - key[index]);
-
-                if ((index + 1) == key.Length)
-                {
-                    index = 0;
-                }
-                else
-                {
-                    index++;
-                }
+                source[i] = (byte)(source[i] - key[i]);
             }
-
-
         }
 
         public static string FromByteToString(byte[] data)

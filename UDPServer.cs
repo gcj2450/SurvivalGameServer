@@ -16,8 +16,7 @@ namespace SurvivalGameServer
 
         protected override void OnReceived(EndPoint endpoint, byte[] buffer, long offset, long size)
         {            
-            Console.WriteLine("Incoming: " + Encoding.UTF8.GetString(buffer, (int)offset, (int)size) + " = " + Id);
-
+            Console.WriteLine("Incoming: " + Encoding.UTF8.GetString(buffer, (int)offset, (int)size) + " = " + Id);            
             ReceiveAsync();
         }
 
@@ -28,7 +27,7 @@ namespace SurvivalGameServer
 
         protected override void OnError(SocketError error)
         {
-            Console.WriteLine($"UDP server caught an error with code {error}");
+            Program.Logger.Write(Serilog.Events.LogEventLevel.Information, $"UDP server caught an error with code {error}");
         }
     }
 }

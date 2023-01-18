@@ -12,7 +12,7 @@ namespace SurvivalGameServer
 
         protected override void OnError(SocketError error)
         {
-            Console.WriteLine($"TCP server caught an error with code {error}");
+            Program.Logger.Write(Serilog.Events.LogEventLevel.Information, $"TCP server caught an error with code {error}");
         }
     }
 }
