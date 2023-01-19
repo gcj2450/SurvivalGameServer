@@ -1,5 +1,6 @@
 ﻿using NetCoreServer;
 using Serilog;
+using SurvivalGameServer.connections;
 using System;
 using System.Net;
 using System.Numerics;
@@ -8,13 +9,12 @@ namespace SurvivalGameServer
 {
     internal class Program
     {
-        public static ILogger Logger = new LoggerConfiguration()
-                .WriteTo.Console()
-                .WriteTo.File("GameServer.log")
-                .CreateLogger();
+        
 
         static void Main(string[] args)
-        {            
+        {          
+            Globals.InitServerGlobals();
+
             Servers.StartServers();
                        
             Console.ReadLine();

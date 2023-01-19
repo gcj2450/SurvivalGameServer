@@ -3,7 +3,7 @@ using System.Net.Sockets;
 using System.Text;
 using NetCoreServer;
 
-namespace SurvivalGameServer
+namespace SurvivalGameServer.connections
 {
     internal class UDPServer : UdpServer
     {
@@ -15,8 +15,9 @@ namespace SurvivalGameServer
         }
 
         protected override void OnReceived(EndPoint endpoint, byte[] buffer, long offset, long size)
-        {            
-            Console.WriteLine("Incoming: " + Encoding.UTF8.GetString(buffer, (int)offset, (int)size) + " = " + Id);            
+        {
+            //Console.WriteLine("Incoming: " + Encoding.UTF8.GetString(buffer, (int)offset, (int)size) + " = " + Id);
+            ReceivedDataHandler.HandleData(new ReadOnlySpan<byte>(buffer, 0, (int)size), Id, endpoint);
             ReceiveAsync();
         }
 
@@ -27,7 +28,7 @@ namespace SurvivalGameServer
 
         protected override void OnError(SocketError error)
         {
-            Program.Logger.Write(Serilog.Events.LogEventLevel.Information, $"UDP server caught an error with code {error}");
+            Globals.Logger.Write(Serilog.Events.LogEventLevel.Information, $"UDP server caught an error with code {error}");
         }
     }
 }
