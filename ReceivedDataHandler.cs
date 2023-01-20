@@ -14,6 +14,7 @@ namespace SurvivalGameServer
     {
         private static Dictionary<int, Encryption> TemporaryEncryptionConnection = new Dictionary<int, Encryption>();
         private static Dictionary<byte[], byte[]> Fortest = new Dictionary<byte[], byte[]>(new ByteArrayComparer());
+        private static Servers connections = Servers.GetInstance();
 
         public static void HandleData(ReadOnlySpan<byte> data, Guid id, EndPoint endpoint)
         {
@@ -32,7 +33,6 @@ namespace SurvivalGameServer
             if (data.Length > 0 && Fortest.ContainsKey(networkID) && packetCode == Globals.PacketCode.Move)
             {                
                 Encryption.Decode(ref packet, Fortest[networkID]);
-
                 MovementPacket movementPacket = ProtobufSchemes.DeserializeProtoBuf<MovementPacket>(packet, endpoint);
                 Console.WriteLine(movementPacket.Horizontal + " = " + movementPacket.Vertical);
             }
@@ -71,7 +71,7 @@ namespace SurvivalGameServer
                     packet = stream.ToArray();
                 }
 
-                Servers.SendTCP(packet, id);
+                connections.SendTCP(packet, id);
 
                 if (!TemporaryEncryptionConnection.ContainsKey(key))
                 {

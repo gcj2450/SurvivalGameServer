@@ -4,11 +4,25 @@ namespace SurvivalGameServer.connections
 {
     internal class Servers
     {
-        private static TCPServer tcpServer;
-        private static UDPServer udpServer;
-        private static bool isActive;
+        private TCPServer tcpServer;
+        private UDPServer udpServer;
+        private bool isActive;
 
-        public static void StartServers()
+        private static Servers instance;
+        private Servers()
+        {
+            StartServers();
+        }
+        public static Servers GetInstance()
+        {
+            if (instance == null)
+            {
+                instance = new Servers();
+            }
+            return instance;
+        }
+
+        private void StartServers()
         {
             if (isActive)
             {
@@ -33,7 +47,7 @@ namespace SurvivalGameServer.connections
             }
         }
 
-        public static void StopServers()
+        public void StopServers()
         {
             try
             {
@@ -41,6 +55,7 @@ namespace SurvivalGameServer.connections
                 udpServer.Stop();
                 Globals.Logger.Write(Serilog.Events.LogEventLevel.Information, "stopped TCP and UDP servers");
                 isActive = false;
+                instance = null;
             }
             catch (Exception ex)
             {
@@ -49,7 +64,7 @@ namespace SurvivalGameServer.connections
             }
         }
 
-        public static bool SendTCP(byte[] data, Guid id)
+        public bool SendTCP(byte[] data, Guid id)
         {
             if (tcpServer.FindSession(id) != null)
             {
@@ -61,7 +76,7 @@ namespace SurvivalGameServer.connections
             }
         }
 
-        public static bool SendTCP(string data, Guid id)
+        public bool SendTCP(string data, Guid id)
         {
             if (tcpServer.FindSession(id) != null)
             {
