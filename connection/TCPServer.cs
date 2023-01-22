@@ -2,7 +2,7 @@
 using System.Net.Sockets;
 using System.Net;
 
-namespace SurvivalGameServer.connections
+namespace SurvivalGameServer
 {
     class TCPServer : TcpServer
     {

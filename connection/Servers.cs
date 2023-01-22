@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace SurvivalGameServer.connections
+namespace SurvivalGameServer
 {
     internal class Servers
     {

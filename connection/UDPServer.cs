@@ -2,7 +2,7 @@
 using System.Net.Sockets;
 using NetCoreServer;
 
-namespace SurvivalGameServer.connections
+namespace SurvivalGameServer
 {
     internal class UDPServer : UdpServer
     {

@@ -10,8 +10,13 @@ namespace SurvivalGameServer
 {
     internal class Globals
     {
+        public const int TICKi = 50;
+        public const float TICKf = 0.05f;
+
         public const int TCP_PORT = 3000;
         public const int UDP_PORT = 3001;
+        public static Dictionary<int, PlayerCharacter> ActivePlayersByTicketID;
+        public static Dictionary<byte[], PlayerConnection> ActivePlayersByNetworID;
 
         public static Stopwatch GlobalTimer;
 
@@ -27,6 +32,9 @@ namespace SurvivalGameServer
 
         public static void InitServerGlobals()
         {
+            ActivePlayersByTicketID = new Dictionary<int, PlayerCharacter>();
+            ActivePlayersByNetworID = new Dictionary<byte[], PlayerConnection>(new ByteArrayComparer());
+
             GlobalTimer = new Stopwatch();
             GlobalTimer.Start();
 
@@ -34,6 +42,24 @@ namespace SurvivalGameServer
                 .WriteTo.Console()
                 .WriteTo.File("GameServer.log")
                 .CreateLogger();
+        }
+    }
+
+    public class ByteArrayComparer : IEqualityComparer<byte[]>
+    {
+        public bool Equals(byte[] left, byte[] right)
+        {
+            if (left == null || right == null)
+            {
+                return left == right;
+            }
+            return left.SequenceEqual(right);
+        }
+        public int GetHashCode(byte[] key)
+        {
+            if (key == null)
+                throw new ArgumentNullException("key");
+            return key.Sum(b => b);
         }
     }
 }

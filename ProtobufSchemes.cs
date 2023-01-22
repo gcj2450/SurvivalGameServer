@@ -49,7 +49,7 @@ namespace SurvivalGameServer
         }
     }
 
-    [ProtoContract]
+    [ProtoContract] //for exchange of RSA secret key between client-server
     public struct RSAExchange
     {
         [ProtoMember(1)]
@@ -64,7 +64,7 @@ namespace SurvivalGameServer
         }
     }
 
-    [ProtoContract]
+    [ProtoContract]//data from client: what controls are pressed
     public struct MovementPacket
     {
         [ProtoMember(1)]

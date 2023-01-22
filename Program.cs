@@ -1,6 +1,5 @@
 ﻿using NetCoreServer;
 using Serilog;
-using SurvivalGameServer.connections;
 using System;
 using System.Net;
 using System.Numerics;
