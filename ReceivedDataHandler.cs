@@ -12,7 +12,7 @@ namespace SurvivalGameServer
     internal class ReceivedDataHandler
     {
         private static Dictionary<int, Encryption> TemporaryEncryptionConnection = new Dictionary<int, Encryption>();
-        private static Dictionary<byte[], byte[]> Fortest = new Dictionary<byte[], byte[]>(new ByteArrayComparer());
+        //private static Dictionary<byte[], byte[]> Fortest = new Dictionary<byte[], byte[]>(new ByteArrayComparer());
         private static Servers connections = Servers.GetInstance();
 
         public static void HandleData(ReadOnlySpan<byte> data, Guid id, EndPoint endpoint)
@@ -29,30 +29,30 @@ namespace SurvivalGameServer
             }
 
             //Movement packet, type 1
-            if (data.Length > 0 && Fortest.ContainsKey(networkID) && packetCode == Globals.PacketCode.Move)
+            if (data.Length > 0 && Globals.ActivePlayersByNetworID.ContainsKey(networkID) && packetCode == Globals.PacketCode.Move)
             {                
-                Encryption.Decode(ref packet, Fortest[networkID]);
+                Encryption.Decode(ref packet, Globals.ActivePlayersByNetworID[networkID].SecretKey);
                 MovementPacket movementPacket = ProtobufSchemes.DeserializeProtoBuf<MovementPacket>(packet, endpoint);
                 Console.WriteLine(movementPacket.Horizontal + " = " + movementPacket.Vertical);
             }
 
-            //00
-            if (data.Length > 0 && data[0] == 0 && data[1] == 0) 
+            //01
+            if (data.Length > 0 && data[0] == 0 && data[1] == 1) 
             {
-                HandleRequestForSecretKey(data, id, endpoint);
+                HandleRequestForSecretKey(id, endpoint);
                 return;
             }
 
-            //01
-            if (data.Length > 0 && data[0] == 0 && data[1] == 1)
+            //02
+            if (data.Length > 0 && data[0] == 0 && data[1] == 2)
             {
                 HandleSecretKeyAndNetworkID(data, id, endpoint);
                 return;
             }
         }
 
-        // 00 - get TCP request for public key
-        private static void HandleRequestForSecretKey(ReadOnlySpan<byte> data, Guid id, EndPoint endpoint)
+        // 01 - get TCP request for public key
+        private static void HandleRequestForSecretKey(Guid id, EndPoint endpoint)
         {
             try
             {
@@ -61,15 +61,9 @@ namespace SurvivalGameServer
 
                 Encryption encryption = new Encryption();
                 int key = encryption.GetHashCode();
-                RSAExchange exchange = new RSAExchange(key, encryption.publicKeyInString);
+                RSAExchange exchange = new RSAExchange(key, encryption.publicKeyInString, 0);
 
-                byte[] packet = Array.Empty<byte>();
-                using (var stream = new MemoryStream())
-                {
-                    Serializer.Serialize(stream, exchange);
-                    packet = stream.ToArray();
-                }
-
+                byte[] packet = ProtobufSchemes.SerializeProtoBuf(exchange);
                 connections.SendTCP(packet, id);
 
                 if (!TemporaryEncryptionConnection.ContainsKey(key))
@@ -85,28 +79,31 @@ namespace SurvivalGameServer
             }
         }
 
-        // 01 - Get public key, generate secret key and NetworkID
+        // 02 - Get public key, generate secret key and NetworkID
         private static void HandleSecretKeyAndNetworkID(ReadOnlySpan<byte> data, Guid id, EndPoint endpoint)
         {
             try
             {
-                RSAExchange exchange = new RSAExchange();
-                Encryption encryption = null;
-
-                using (Stream stream = new MemoryStream(Encryption.TakeSomeToArrayFromNumber(data, 3)))
-                {
-                    exchange = Serializer.Deserialize<RSAExchange>(stream);
-                }
-
+                RSAExchange exchange = ProtobufSchemes.DeserializeProtoBuf<RSAExchange>(Encryption.TakeSomeToArrayFromNumber(data, 3), endpoint);
+                
                 if (TemporaryEncryptionConnection.ContainsKey(exchange.TemporaryKeyCode))
                 {
-                    encryption = TemporaryEncryptionConnection[exchange.TemporaryKeyCode];
+                    Encryption encryption = TemporaryEncryptionConnection[exchange.TemporaryKeyCode];
+                    
+                    /*
                     Fortest.Add(
                         BitConverter.GetBytes(exchange.TemporaryKeyCode),
                         encryption.GetSecretKey(exchange.PublicKey));
-                    encryption.Dispose();
+                    */
+                    
+                    Globals.ActivePlayersByNetworID.Add(
+                        BitConverter.GetBytes(exchange.TemporaryKeyCode), 
+                        Globals.ActivePlayersByTicketID[exchange.TicketID].Connection);
+
+                    Globals.ActivePlayersByTicketID[exchange.TicketID].Connection.SetSecretKey(encryption.GetSecretKey(exchange.PublicKey));
 
                     TemporaryEncryptionConnection.Remove(exchange.TemporaryKeyCode);
+                    encryption.Dispose();
 
                     Globals.Logger.Write(Serilog.Events.LogEventLevel.Information,
                         $"successfully exchanged secret key and network ID with {endpoint}");

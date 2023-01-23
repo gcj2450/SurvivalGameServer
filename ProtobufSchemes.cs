@@ -49,18 +49,22 @@ namespace SurvivalGameServer
         }
     }
 
-    [ProtoContract] //for exchange of RSA secret key between client-server
+    
+    [ProtoContract] //for exchange of RSA secret key between client-server    
     public struct RSAExchange
     {
         [ProtoMember(1)]
-        public int TemporaryKeyCode {get;set;}
+        public int TemporaryKeyCode { get; set; }
         [ProtoMember(2)]
-        public string PublicKey {get;set;}
+        public string PublicKey { get; set; }
+        [ProtoMember(3)]
+        public int TicketID { get; set; }
 
-        public RSAExchange(int TemporaryKeyCode, string PublicKey)
+        public RSAExchange(int TemporaryKeyCode, string PublicKey, int ticket)
         {
             this.TemporaryKeyCode = TemporaryKeyCode;
             this.PublicKey = PublicKey;
+            TicketID = ticket;
         }
     }
 
