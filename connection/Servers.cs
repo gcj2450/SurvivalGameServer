@@ -87,5 +87,14 @@ namespace SurvivalGameServer
                 return false;
             }
         }
+
+        public bool SendUDP(byte[] data, byte[] key, EndPoint endpoint, Globals.PacketCode code)
+        {
+            //Console.WriteLine(string.Join('=', data));
+            Encryption.Encode(ref data, key, code);
+            //Console.WriteLine(string.Join('=', data));
+            
+            return udpServer.SendAsync(endpoint, data);
+        }
     }
 }

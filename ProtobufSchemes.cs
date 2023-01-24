@@ -69,17 +69,48 @@ namespace SurvivalGameServer
     }
 
     [ProtoContract]//data from client: what controls are pressed
-    public struct MovementPacket
+    public struct MovementPacketFromClient
     {
         [ProtoMember(1)]
         public float Horizontal { get; set; }
         [ProtoMember(2)]
         public float Vertical { get; set; }
+        [ProtoMember(3)]
+        public bool isActionButtonOnePressed { get; set; }
 
-        public MovementPacket(float horizontal, float vertical)
+        public MovementPacketFromClient(float horizontal, float vertical, bool isOnePressed)
         {
             Horizontal = horizontal;
             Vertical = vertical;
+            isActionButtonOnePressed = isOnePressed;
         }
+    }
+
+    [ProtoContract]
+    public struct MovementPacketFromServer
+    {
+        public MovementPacketFromServer(float positionX, float positionY, float positionZ, float rotationX, float rotationY, float rotationZ)
+        {
+            PositionX = positionX;
+            PositionY = positionY;
+            PositionZ = positionZ;
+            RotationX = rotationX;
+            RotationY = rotationY;
+            RotationZ = rotationZ;
+        }
+
+        [ProtoMember(1)]
+        public float PositionX { get; set; }
+        [ProtoMember(2)]
+        public float PositionY { get; set; }
+        [ProtoMember(3)]
+        public float PositionZ { get; set; }
+        [ProtoMember(4)]
+        public float RotationX { get; set; }
+        [ProtoMember(5)]
+        public float RotationY { get; set; }
+        [ProtoMember(6)]
+        public float RotationZ { get; set; }
+
     }
 }

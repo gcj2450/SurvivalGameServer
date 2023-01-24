@@ -82,31 +82,21 @@ namespace SurvivalGameServer
         }
 
 
-     
-        public static void Encode(ref byte[] source, byte[] key)
+
+        public static void Encode(ref byte[] source, byte[] key, Globals.PacketCode code)
         {
             if (source == null || key == null)
             {
-                source = new byte[] { 0 };
                 return;
             }
 
+            int index = source.Length < key.Length ? source.Length : key.Length;
 
-            int index = 0;
-
-            for (int i = 6; i < source.Length; i++)
+            for (int i = 0; i < index; i++)
             {
-                source[i] = (byte)(source[i] + key[index]);
-
-                if ((index + 1) == key.Length)
-                {
-                    index = 0;
-                }
-                else
-                {
-                    index++;
-                }
+                source[i] = (byte)(source[i] + key[i]);
             }
+            source = new byte[1] { (byte)code }.Concat(source).ToArray();
         }
 
 

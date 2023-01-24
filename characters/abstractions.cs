@@ -41,6 +41,13 @@ namespace SurvivalGameServer
             Rotation = rotation;
             ZoneOfLocationId = zone;
         }
+        public void SetNewOrientation(float positionX, float positionY, float positionZ, 
+            float rotationX, float rotationY, float rotationZ, uint zone)
+        {
+            Position = new Vector3(positionX, positionY, positionZ);
+            Rotation = new Vector3(rotationX, rotationY, rotationZ);
+            ZoneOfLocationId = zone;
+        }
         public void SetNewPosition(Vector3 position)
         {
             Position = position;

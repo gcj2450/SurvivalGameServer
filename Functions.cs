@@ -8,6 +8,8 @@ namespace SurvivalGameServer
 {
     internal class Functions
     {
+        public const float Deg2Rad = (float)Math.PI / 180f;
+
         public static void normalize_to_vector(ref float[] vector_axis)
         {
             float find_max = vector3_magnitude_unity(vector_axis[0], vector_axis[1], vector_axis[2]);

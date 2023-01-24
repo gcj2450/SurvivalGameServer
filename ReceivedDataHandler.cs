@@ -11,11 +11,9 @@ namespace SurvivalGameServer
 {
     internal class ReceivedDataHandler
     {
-        private static Dictionary<int, Encryption> TemporaryEncryptionConnection = new Dictionary<int, Encryption>();
-        //private static Dictionary<byte[], byte[]> Fortest = new Dictionary<byte[], byte[]>(new ByteArrayComparer());
-        private static Servers connections = Servers.GetInstance();
-
-        public static void HandleData(ReadOnlySpan<byte> data, Guid id, EndPoint endpoint)
+        private Dictionary<int, Encryption> TemporaryEncryptionConnection = new Dictionary<int, Encryption>();
+        
+        public void HandleData(ReadOnlySpan<byte> data, Guid id, EndPoint endpoint)
         {
             //Console.WriteLine(string.Join('=', data.ToArray()));
             byte[] networkID = Array.Empty<byte>();
@@ -28,12 +26,25 @@ namespace SurvivalGameServer
                 packet = data.Slice(5, data.Length - 5).ToArray();
             }
 
-            //Movement packet, type 1
-            if (data.Length > 0 && Globals.ActivePlayersByNetworID.ContainsKey(networkID) && packetCode == Globals.PacketCode.Move)
-            {                
-                Encryption.Decode(ref packet, Globals.ActivePlayersByNetworID[networkID].SecretKey);
-                MovementPacket movementPacket = ProtobufSchemes.DeserializeProtoBuf<MovementPacket>(packet, endpoint);
-                Console.WriteLine(movementPacket.Horizontal + " = " + movementPacket.Vertical);
+            //packets with codes
+            if (data.Length > 0 && Globals.ActivePlayersByNetworID.ContainsKey(networkID)/* && packetCode == Globals.PacketCode.MoveFromClient*/)
+            {          
+                switch(packetCode)
+                {
+                    case Globals.PacketCode.MoveFromClient:
+                        Encryption.Decode(ref packet, Globals.ActivePlayersByNetworID[networkID].SecretKey);
+                        MovementPacketFromClient movementPacket = ProtobufSchemes.DeserializeProtoBuf<MovementPacketFromClient>(packet, endpoint);
+                        Globals.ActivePlayersByNetworID[networkID].AddMovementPacket(movementPacket);
+                        break;
+
+                    case Globals.PacketCode.GetClientUDPEndpoint:
+                        Globals.ActivePlayersByNetworID[networkID].SetEndpointForUDP(endpoint);
+                        Globals.Logger.Write(Serilog.Events.LogEventLevel.Information,
+                        $"received UDP endpoint from {endpoint}");
+                        break;
+                }
+
+                
             }
 
             //01
@@ -52,7 +63,7 @@ namespace SurvivalGameServer
         }
 
         // 01 - get TCP request for public key
-        private static void HandleRequestForSecretKey(Guid id, EndPoint endpoint)
+        private void HandleRequestForSecretKey(Guid id, EndPoint endpoint)
         {
             try
             {
@@ -64,7 +75,7 @@ namespace SurvivalGameServer
                 RSAExchange exchange = new RSAExchange(key, encryption.publicKeyInString, 0);
 
                 byte[] packet = ProtobufSchemes.SerializeProtoBuf(exchange);
-                connections.SendTCP(packet, id);
+                Servers.GetInstance().SendTCP(packet, id);
 
                 if (!TemporaryEncryptionConnection.ContainsKey(key))
                 {
@@ -80,7 +91,7 @@ namespace SurvivalGameServer
         }
 
         // 02 - Get public key, generate secret key and NetworkID
-        private static void HandleSecretKeyAndNetworkID(ReadOnlySpan<byte> data, Guid id, EndPoint endpoint)
+        private void HandleSecretKeyAndNetworkID(ReadOnlySpan<byte> data, Guid id, EndPoint endpoint)
         {
             try
             {
@@ -89,24 +100,35 @@ namespace SurvivalGameServer
                 if (TemporaryEncryptionConnection.ContainsKey(exchange.TemporaryKeyCode))
                 {
                     Encryption encryption = TemporaryEncryptionConnection[exchange.TemporaryKeyCode];
-                    
-                    /*
-                    Fortest.Add(
-                        BitConverter.GetBytes(exchange.TemporaryKeyCode),
-                        encryption.GetSecretKey(exchange.PublicKey));
-                    */
-                    
-                    Globals.ActivePlayersByNetworID.Add(
-                        BitConverter.GetBytes(exchange.TemporaryKeyCode), 
-                        Globals.ActivePlayersByTicketID[exchange.TicketID].Connection);
+                    int ticketID = exchange.TicketID;
 
-                    Globals.ActivePlayersByTicketID[exchange.TicketID].Connection.SetSecretKey(encryption.GetSecretKey(exchange.PublicKey));
+                    if (!Globals.ActivePlayersByTicketID.ContainsKey(ticketID))
+                    {
+                        Globals.Logger.Write(Serilog.Events.LogEventLevel.Error,
+                        $"no such player on server from {endpoint} with ticket {ticketID}");
+                        encryption.Dispose();
+                        return;
+                    }
+
+                    PlayerConnection playerConnection = Globals.ActivePlayersByTicketID[ticketID].Connection;
+                    playerConnection.SetConnectionData(
+                        encryption.GetSecretKey(exchange.PublicKey), id);
+
+
+                    Globals.ActivePlayersByNetworID.Add(
+                        BitConverter.GetBytes(exchange.TemporaryKeyCode),
+                        playerConnection);
+                                        
 
                     TemporaryEncryptionConnection.Remove(exchange.TemporaryKeyCode);
                     encryption.Dispose();
 
+                    GameServer.GetGameServerInstance().AddPlayerCharacter(playerConnection.PlayerCharacter);
+
                     Globals.Logger.Write(Serilog.Events.LogEventLevel.Information,
                         $"successfully exchanged secret key and network ID with {endpoint}");
+                    Globals.Logger.Write(Serilog.Events.LogEventLevel.Information,
+                        $"player from {endpoint} with ticket {ticketID} entered the world");
                 }
                 else
                 {
@@ -121,7 +143,7 @@ namespace SurvivalGameServer
             }
         }
 
-        private static async void KillAfterTimeoutTemporaryEncryptionConnection(int key)
+        private async void KillAfterTimeoutTemporaryEncryptionConnection(int key)
         {
             if (!TemporaryEncryptionConnection.ContainsKey(key))
             {

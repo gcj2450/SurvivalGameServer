@@ -9,6 +9,8 @@ namespace SurvivalGameServer
 {
     internal class Lands
     {
+
+
         Vector3[] grounds =  new Vector3[] {
             new Vector3(-3f,0,1.5f),
             new Vector3(-4,0,0.5f),

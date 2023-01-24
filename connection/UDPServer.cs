@@ -6,20 +6,25 @@ namespace SurvivalGameServer
 {
     internal class UDPServer : UdpServer
     {
-        public UDPServer(IPAddress address, int port) : base(address, port) { }
+        private ReceivedDataHandler receivedDataHandler;
+        public UDPServer(IPAddress address, int port) : base(address, port) 
+        {
+            receivedDataHandler = new ReceivedDataHandler();
+        }
 
         protected override void OnStarted()
         {
             ReceiveAsync();
         }
-
+        
         protected override void OnReceived(EndPoint endpoint, byte[] buffer, long offset, long size)
         {
             //Console.WriteLine("Incoming: " + Encoding.UTF8.GetString(buffer, (int)offset, (int)size) + " = " + Id);
-            ReceivedDataHandler.HandleData(new ReadOnlySpan<byte>(buffer, 0, (int)size), Id, endpoint);
+            //Console.WriteLine(endpoint.ToString());
+            receivedDataHandler.HandleData(new ReadOnlySpan<byte>(buffer, 0, (int)size), Id, endpoint);
             ReceiveAsync();
         }
-
+        
         protected override void OnSent(EndPoint endpoint, long sent)
         {
             //ReceiveAsync();

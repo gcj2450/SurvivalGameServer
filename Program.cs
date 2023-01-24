@@ -12,6 +12,7 @@ namespace SurvivalGameServer
         {   
             Globals.InitServerGlobals();
 
+            //init servers
             Servers connections = Servers.GetInstance();
 
             //TEMPORARY=============================
@@ -19,6 +20,9 @@ namespace SurvivalGameServer
             Globals.ActivePlayersByTicketID.Add(12345678, player);
             //======================================
 
+            //init game core
+            GameServer gameServer = GameServer.GetGameServerInstance();
+            
             Console.ReadLine();
             connections.StopServers();            
         }

@@ -10,8 +10,13 @@ namespace SurvivalGameServer
 {
     class TCPSession : TcpSession
     {
-        public TCPSession(TcpServer server) : base(server) { }
+        private ReceivedDataHandler receivedDataHandler;
 
+        public TCPSession(TcpServer server) : base(server) 
+        {
+            receivedDataHandler = new ReceivedDataHandler();
+        }
+        
         protected override void OnConnected()
         {
             Globals.Logger.Write(Serilog.Events.LogEventLevel.Information, $"TCP session with Id:{Id} and Endpoint:{Socket.RemoteEndPoint} connected!");
@@ -34,7 +39,7 @@ namespace SurvivalGameServer
             //Console.WriteLine(size);
             //Console.WriteLine(string.Join('=', new ReadOnlySpan<byte>(buffer, (int)offset, (int)size).ToArray()));
 
-            ReceivedDataHandler.HandleData(new ReadOnlySpan<byte>(buffer, 0, (int)size), Id, Socket.RemoteEndPoint);
+            receivedDataHandler.HandleData(new ReadOnlySpan<byte>(buffer, 0, (int)size), Id, Socket.RemoteEndPoint);
         }
 
         protected override void OnError(SocketError error)

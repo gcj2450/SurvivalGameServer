@@ -25,9 +25,9 @@ namespace SurvivalGameServer
         public enum PacketCode
         {
             None = 0,
-            Move = 1, //joystick press data
-            Abut = 2  //action buttons pressed
-
+            MoveFromClient = 1, //joystick press data
+            MoveFromServer = 2,
+            GetClientUDPEndpoint = 3
         }
 
         public static void InitServerGlobals()
