@@ -2,7 +2,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace SurvivalGameServer
+namespace SurvivalGameServer.connection
 {
     internal class Encryption : IDisposable
     {
@@ -11,16 +11,16 @@ namespace SurvivalGameServer
         private RSACryptoServiceProvider csp;
 
         public Encryption()
-        {            
+        {
             //create keys
             csp = new RSACryptoServiceProvider(2048);
             privateKey = csp.ExportParameters(true);
             publicKey = csp.ExportParameters(false);
-            
+
 
 
             //conver key into string
-            var sw = new System.IO.StringWriter();
+            var sw = new StringWriter();
             var xs = new System.Xml.Serialization.XmlSerializer(typeof(RSAParameters));
             xs.Serialize(sw, publicKey);
             publicKeyInString = sw.ToString();
@@ -30,7 +30,7 @@ namespace SurvivalGameServer
         public byte[] GetSecretKey(string encoded_bytes)
         {
             //getting back real public key by public key string
-            var sr = new System.IO.StringReader(encoded_bytes);
+            var sr = new StringReader(encoded_bytes);
             var xs = new System.Xml.Serialization.XmlSerializer(typeof(byte[]));
             byte[] preres = (byte[])xs.Deserialize(sr);
 
@@ -53,7 +53,7 @@ namespace SurvivalGameServer
 
             for (int i = 0; i < key_in_string.Length; i++)
             {
-                result.Add(Byte.Parse(key_in_string.Substring(i, 1)));
+                result.Add(byte.Parse(key_in_string.Substring(i, 1)));
             }
 
             return result.ToArray();
@@ -78,7 +78,7 @@ namespace SurvivalGameServer
             }
 
 
-            return source.Slice(fromNumber, (source.Length - fromNumber)).ToArray();
+            return source.Slice(fromNumber, source.Length - fromNumber).ToArray();
         }
 
 

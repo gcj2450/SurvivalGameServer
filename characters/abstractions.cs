@@ -15,9 +15,8 @@ namespace SurvivalGameServer
         public uint Level { get; private set; }
         public uint Armor { get; private set; }
         public Vector3 Position { get; private set; }
-        public Vector3 Rotation { get; private set; }
-        public uint ZoneOfLocationId { get; private set; }
-        private float speed;
+        public Vector3 Rotation { get; private set; }        
+        private float speed = 1f;
         public float Speed
         {
             get => speed;
@@ -35,18 +34,16 @@ namespace SurvivalGameServer
         }
 
         public BaseCharacter(){}
-        public void SetNewOrientation(Vector3 position, Vector3 rotation, uint zone)
+        public void SetNewOrientation(Vector3 position, Vector3 rotation)
         {
             Position = position;
             Rotation = rotation;
-            ZoneOfLocationId = zone;
         }
         public void SetNewOrientation(float positionX, float positionY, float positionZ, 
-            float rotationX, float rotationY, float rotationZ, uint zone)
+            float rotationX, float rotationY, float rotationZ)
         {
             Position = new Vector3(positionX, positionY, positionZ);
             Rotation = new Vector3(rotationX, rotationY, rotationZ);
-            ZoneOfLocationId = zone;
         }
         public void SetNewPosition(Vector3 position)
         {

@@ -6,7 +6,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SurvivalGameServer
+namespace SurvivalGameServer.connection
 {
     internal class ProtobufSchemes
     {
@@ -16,7 +16,7 @@ namespace SurvivalGameServer
             {
                 using (var stream = new MemoryStream())
                 {
-                    Serializer.Serialize<T>(stream, data);
+                    Serializer.Serialize(stream, data);
                     return stream.ToArray();
                 }
             }
@@ -25,7 +25,7 @@ namespace SurvivalGameServer
                 Globals.Logger.Write(Serilog.Events.LogEventLevel.Error, $"error serializing packet to ... ");
                 Globals.Logger.Write(Serilog.Events.LogEventLevel.Error, ex.ToString());
             }
-            
+
             return Array.Empty<byte>();
         }
 
@@ -43,13 +43,13 @@ namespace SurvivalGameServer
                 Globals.Logger.Write(Serilog.Events.LogEventLevel.Error, $"error deserializing packet from {endPoint}");
                 Globals.Logger.Write(Serilog.Events.LogEventLevel.Error, ex.ToString());
             }
-            
-            T result = default(T);
+
+            T result = default;
             return result;
         }
     }
 
-    
+
     [ProtoContract] //for exchange of RSA secret key between client-server    
     public struct RSAExchange
     {

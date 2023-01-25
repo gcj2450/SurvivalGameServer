@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using SurvivalGameServer.connection;
 
 namespace SurvivalGameServer
 {

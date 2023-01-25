@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -31,6 +32,30 @@ namespace SurvivalGameServer
         public static float RadianToDegree(float angle)
         {
             return angle * (180 / (float)Math.PI);
+        }
+
+        public static float[] Lerp(float start_x, float start_y, float start_z, float end_x, float end_y, float end_z, float koef)
+        {
+
+            float DeltaX = (end_x - start_x) * koef;
+
+            float DeltaY = (end_y - start_y) * koef;
+
+            float DeltaZ = (end_z - start_z) * koef;
+
+            return new float[3] { start_x + DeltaX, start_y + DeltaY, start_z + DeltaZ };
+        }
+
+        public static Vector3 Lerp(Vector3 start, Vector3 end, float koef)
+        {
+
+            float DeltaX = (end.X - start.X) * koef;
+
+            float DeltaY = (end.Y - start.Y) * koef;
+
+            float DeltaZ = (end.Z - start.Z) * koef;
+
+            return new Vector3 (start.X + DeltaX, start.Y + DeltaY, start.Z + DeltaZ);
         }
     }
 }

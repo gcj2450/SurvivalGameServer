@@ -7,12 +7,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 
-namespace SurvivalGameServer
+namespace SurvivalGameServer.connection
 {
     internal class ReceivedDataHandler
     {
         private Dictionary<int, Encryption> TemporaryEncryptionConnection = new Dictionary<int, Encryption>();
-        
+
         public void HandleData(ReadOnlySpan<byte> data, Guid id, EndPoint endpoint)
         {
             //Console.WriteLine(string.Join('=', data.ToArray()));
@@ -28,8 +28,8 @@ namespace SurvivalGameServer
 
             //packets with codes
             if (data.Length > 0 && Globals.ActivePlayersByNetworID.ContainsKey(networkID)/* && packetCode == Globals.PacketCode.MoveFromClient*/)
-            {          
-                switch(packetCode)
+            {
+                switch (packetCode)
                 {
                     case Globals.PacketCode.MoveFromClient:
                         Encryption.Decode(ref packet, Globals.ActivePlayersByNetworID[networkID].SecretKey);
@@ -44,11 +44,11 @@ namespace SurvivalGameServer
                         break;
                 }
 
-                
+
             }
 
             //01
-            if (data.Length > 0 && data[0] == 0 && data[1] == 1) 
+            if (data.Length > 0 && data[0] == 0 && data[1] == 1)
             {
                 HandleRequestForSecretKey(id, endpoint);
                 return;
@@ -96,7 +96,7 @@ namespace SurvivalGameServer
             try
             {
                 RSAExchange exchange = ProtobufSchemes.DeserializeProtoBuf<RSAExchange>(Encryption.TakeSomeToArrayFromNumber(data, 3), endpoint);
-                
+
                 if (TemporaryEncryptionConnection.ContainsKey(exchange.TemporaryKeyCode))
                 {
                     Encryption encryption = TemporaryEncryptionConnection[exchange.TemporaryKeyCode];
@@ -118,7 +118,7 @@ namespace SurvivalGameServer
                     Globals.ActivePlayersByNetworID.Add(
                         BitConverter.GetBytes(exchange.TemporaryKeyCode),
                         playerConnection);
-                                        
+
 
                     TemporaryEncryptionConnection.Remove(exchange.TemporaryKeyCode);
                     encryption.Dispose();
@@ -155,5 +155,5 @@ namespace SurvivalGameServer
         }
     }
 
-    
+
 }

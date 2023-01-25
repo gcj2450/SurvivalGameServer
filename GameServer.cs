@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SurvivalGameServer.connection;
 
 namespace SurvivalGameServer
 {
@@ -36,9 +32,18 @@ namespace SurvivalGameServer
         public void SetPositionForPlayerCharacter(PlayerConnection playerConnection, MovementPacketFromClient movementPacket)
         {
             float brutto_angle = MathF.Atan2(movementPacket.Horizontal, movementPacket.Vertical) * 180 / MathF.PI;
-            float new_position_x = playerConnection.PlayerCharacter.Position.X + MathF.Sin(brutto_angle * Functions.Deg2Rad) / 10f;//vert_touch
-            float new_position_z = playerConnection.PlayerCharacter.Position.Z + MathF.Cos(brutto_angle * Functions.Deg2Rad) / 10f;//vert_touch
-            playerConnection.PlayerCharacter.SetNewOrientation(new_position_x, 0, new_position_z, 0, brutto_angle, 0, 0);
+            
+            float new_position_x = playerConnection.PlayerCharacter.Position.X 
+                + MathF.Sin(brutto_angle * Functions.Deg2Rad) / 10f * playerConnection.PlayerCharacter.Speed;
+            
+            float new_position_z = playerConnection.PlayerCharacter.Position.Z 
+                + MathF.Cos(brutto_angle * Functions.Deg2Rad) / 10f * playerConnection.PlayerCharacter.Speed;
+            
+            playerConnection.PlayerCharacter.SetNewOrientation(
+                new_position_x, 
+                lands.GetWalkableY(new_position_x, new_position_z), 
+                new_position_z, 
+                0, brutto_angle, 0);            
         }
 
     }

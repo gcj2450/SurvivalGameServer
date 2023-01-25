@@ -3,9 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Tasks;
+using SurvivalGameServer.connection;
 
 namespace SurvivalGameServer
 {
@@ -86,7 +84,7 @@ namespace SurvivalGameServer
                     PlayerCharacter.Rotation.Y,
                     PlayerCharacter.Rotation.Z);
                 
-                connections.SendUDP(ProtobufSchemes.SerializeProtoBuf<MovementPacketFromServer>(mover), SecretKey, endPoint, Globals.PacketCode.MoveFromServer);
+                connections.SendUDP(ProtobufSchemes.SerializeProtoBuf(mover), SecretKey, endPoint, Globals.PacketCode.MoveFromServer);
                 isUpdated = false;
             }
             
