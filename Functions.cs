@@ -57,5 +57,13 @@ namespace SurvivalGameServer
 
             return new Vector3 (start.X + DeltaX, start.Y + DeltaY, start.Z + DeltaZ);
         }
+
+        public static float Vector3Distance(Vector3 one, Vector3 two)
+        {
+            float xxxxx = MathF.Abs(one.X - two.X);
+            float yyyyy = MathF.Abs(one.Y - two.Y);
+            float zzzzz = MathF.Abs(one.Z - two.Z);
+            return MathF.Sqrt(xxxxx * xxxxx + yyyyy * yyyyy + zzzzz * zzzzz);
+        }
     }
 }
