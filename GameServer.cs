@@ -1,4 +1,5 @@
 ﻿using SurvivalGameServer.connection;
+using System.Numerics;
 
 namespace SurvivalGameServer
 {
@@ -12,6 +13,8 @@ namespace SurvivalGameServer
         {
             lands = new Lands();
             playerCharacter = new List<PlayerCharacter>();
+
+            
         }
 
         public static GameServer GetGameServerInstance()
@@ -41,7 +44,7 @@ namespace SurvivalGameServer
             
             playerConnection.PlayerCharacter.SetNewOrientation(
                 new_position_x, 
-                lands.GetWalkableY(new_position_x, new_position_z), 
+                lands.GetWalkableYCoord(new_position_x, playerConnection.PlayerCharacter.Position.Y, new_position_z), 
                 new_position_z, 
                 0, brutto_angle, 0);            
         }

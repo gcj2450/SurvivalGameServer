@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SurvivalGameServer
 {
-    public abstract class BaseCharacter
+    public abstract class Characters
     {
         public readonly int Id;
         public uint CurrentHealth { get; private set; }
@@ -33,7 +33,7 @@ namespace SurvivalGameServer
             }
         }
 
-        public BaseCharacter(){}
+        public Characters(){}
         public void SetNewOrientation(Vector3 position, Vector3 rotation)
         {
             Position = position;

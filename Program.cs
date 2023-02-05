@@ -11,12 +11,13 @@ namespace SurvivalGameServer
         static void Main(string[] args)
         {   
             Globals.InitServerGlobals();
-
+            
             //init servers
             Servers connections = Servers.GetInstance();
 
             //TEMPORARY=============================
             PlayerCharacter player = new PlayerCharacter(12345678);
+            player.SetNewPosition(new Vector3(5, 0, 5));
             Globals.ActivePlayersByTicketID.Add(12345678, player);
             //======================================
 

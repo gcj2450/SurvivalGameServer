@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SurvivalGameServer
 {
-    internal class PlayerCharacter : BaseCharacter
+    internal class PlayerCharacter : Characters
     {
         public PlayerConnection Connection { get; private set; }
         public PlayerCharacter(int ticket) 
