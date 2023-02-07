@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace SurvivalGameServer
 {
-    public class PolyCollider : Collider
+    public class PolyCollider
     {
         public readonly Vector3[] Points;
         public readonly float PointsNumber;
 
-        public PolyCollider(Vector3[] points, float pointsNumber) : base(ColliderType.Poly)
+        public PolyCollider(Vector3[] points, float pointsNumber)
         {
             Points = points;
             PointsNumber = pointsNumber;

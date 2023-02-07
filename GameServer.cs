@@ -42,6 +42,8 @@ namespace SurvivalGameServer
             float new_position_z = playerConnection.PlayerCharacter.Position.Z 
                 + MathF.Cos(brutto_angle * Functions.Deg2Rad) / 10f * playerConnection.PlayerCharacter.Speed;
             
+            if (lands.isColliding(new Vector3(new_position_x, 0, new_position_z), 0.3f)) { return; }
+
             playerConnection.PlayerCharacter.SetNewOrientation(
                 new_position_x, 
                 lands.GetWalkableYCoord(new_position_x, playerConnection.PlayerCharacter.Position.Y, new_position_z), 

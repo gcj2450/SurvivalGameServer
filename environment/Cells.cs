@@ -14,7 +14,7 @@ namespace SurvivalGameServer
         public Vector3 MaxCoord { get; private set; }
         public HashSet<Vector3> TerrainVectors;
         public HashSet<Characters> Characters;
-        public HashSet<RectCollider> RectColliders;
+        public HashSet<ICollider> AllColliders;
         public Cells(float minX, float minZ, float maxX, float maxZ) 
         {
             Location = new Vector2(minX, minZ);
@@ -22,7 +22,7 @@ namespace SurvivalGameServer
             MaxCoord = new Vector3(maxX, 0, maxZ);
             TerrainVectors = new HashSet<Vector3>();
             Characters = new HashSet<Characters>();
-            RectColliders = new HashSet<RectCollider>();
+            AllColliders = new HashSet<ICollider>();
         }
 
         public bool isInsideThisCell(Vector3 position)

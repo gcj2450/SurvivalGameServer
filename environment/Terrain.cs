@@ -13,6 +13,12 @@ namespace SurvivalGameServer
 
         public Vector3[] GetTerrainArray() => grounds;
         public RectCollider[] GetRectCollidersArray() => rectColliders;
+        public RoundCollider[] GetRoundCollidersArray() => roundColliders;
+
+        private RoundCollider[] roundColliders = new RoundCollider[]
+        {
+            new RoundCollider(new Vector3(7.5f, 0, 1.8f), 0.5f)
+        };
 
         private RectCollider[] rectColliders = new RectCollider[]
         {

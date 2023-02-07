@@ -42,17 +42,17 @@ namespace SurvivalGameServer
                 GetCell(arr[i]).TerrainVectors.Add(arr[i]);
             }
 
-            //Enter rect colliders
-            RectCollider[] rectColliders= terrain.GetRectCollidersArray();
-            List<Vector3> coverage = new List<Vector3>();
-            for (int i = 0; i < rectColliders.Length; i++)
+            List<ICollider> colliders = new List<ICollider>();
+            colliders.AddRange(terrain.GetRectCollidersArray());
+            colliders.AddRange(terrain.GetRoundCollidersArray());
+            for (int i = 0; i < colliders.Count; i++)
             {
-                coverage = rectColliders[i].GetCoverageCells();
+                List<Vector3> coverage = colliders[i].GetCoverageCells();
                 for (int j = 0; j < coverage.Count; j++)
                 {
-                    GetCell(coverage[j]).RectColliders.Add(rectColliders[i]);
+                    GetCell(coverage[j]).AllColliders.Add(colliders[i]);
                 }
-            }                        
+            }
         }
 
         public Cells GetCell(Vector3 position)
@@ -105,6 +105,19 @@ namespace SurvivalGameServer
 
             return result;
         }
+        
+        public ICollider[] GetAllCollidersClosestVector(Vector3 position)
+        {
+            int x = (int)position.X;
+            if (x % 2 != 0) x--;
+
+            int y = (int)position.Z;
+            if (y % 2 != 0) y--;
+
+            return CellsSet[new Vector2(x, y)].AllColliders.ToArray();
+        }
+
+
 
     }
 }

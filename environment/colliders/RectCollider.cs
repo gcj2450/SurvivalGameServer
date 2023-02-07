@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SurvivalGameServer
 {
-    public struct RectCollider
+    public class RectCollider: ICollider
     {
         public readonly Vector3 StartPoint;
         public readonly Vector3 EndPoint;
@@ -28,10 +28,15 @@ namespace SurvivalGameServer
                 }
             }
         }
-
         public List<Vector3> GetCoverageCells()
         {
             return coverageCells;
+        }
+        
+        public bool isColliding(Vector3 point, float radius)
+        {            
+            return ((point.X + radius) > StartPoint.X && (point.Z + radius) > StartPoint.Z) 
+                && ((point.X - radius) < EndPoint.X && (point.Z - radius) < EndPoint.Z);
         }
     }
 }

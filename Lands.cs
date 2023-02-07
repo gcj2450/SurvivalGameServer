@@ -44,6 +44,17 @@ namespace SurvivalGameServer
                         
             return (maxY + minY) / 2f;
         }
+
+        public bool isColliding(Vector3 position, float radius)
+        {            
+            ICollider[] colliders = ws.GetAllCollidersClosestVector(position);
+            for (int i = 0; i < colliders.Length; i++)
+            {
+                if (colliders[i].isColliding(position, radius)) return true;
+            }
+
+            return false;
+        }
     }
 
 
