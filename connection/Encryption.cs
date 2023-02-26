@@ -2,7 +2,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace SurvivalGameServer.connection
+namespace SurvivalGameServer
 {
     internal class Encryption : IDisposable
     {

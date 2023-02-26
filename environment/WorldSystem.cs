@@ -34,14 +34,16 @@ namespace SurvivalGameServer
                 height = 0;
                 width += CELL_SIZE;
             }
-
+                        
             //Enter terrain data
+            
             Vector3[] arr = terrain.GetTerrainArray();
             for (int i = 0; i < arr.Length; i++)
             {
                 GetCell(arr[i]).TerrainVectors.Add(arr[i]);
             }
-
+                        
+            //enter colliders data            
             List<ICollider> colliders = new List<ICollider>();
             colliders.AddRange(terrain.GetRectCollidersArray());
             colliders.AddRange(terrain.GetRoundCollidersArray());
@@ -52,7 +54,8 @@ namespace SurvivalGameServer
                 {
                     GetCell(coverage[j]).AllColliders.Add(colliders[i]);
                 }
-            }
+            }           
+                      
         }
 
         public Cells GetCell(Vector3 position)
@@ -77,28 +80,35 @@ namespace SurvivalGameServer
 
         public Vector3[] GetTerrainClosestVectors(Vector3 position)
         {
+            Vector3[] result = Array.Empty<Vector3>();
+
             int x = (int)position.X;
             if (x % 2 != 0) x--;
 
             int y = (int)position.Z;
             if (y % 2 != 0) y--;
                         
-            Vector3[] result = CellsSet[new Vector2(x, y)].TerrainVectors.ToArray();
+            Vector2 preresult = new Vector2(x, y);
 
-            if (position.X < (x + (float)CELL_SIZE / 3))
+            if (CellsSet.ContainsKey(preresult))
+            {
+                result = CellsSet[new Vector2(x, y)].TerrainVectors.ToArray();
+            }
+            
+            if (position.X < (x + (float)CELL_SIZE / 3) && CellsSet.ContainsKey(new Vector2(x - CELL_SIZE, y)))
             {                                   
                 result = result.Concat(CellsSet[new Vector2(x - CELL_SIZE, y)].TerrainVectors.ToArray()).ToArray();                                 
             }
-            else if(position.X > (x + (float)CELL_SIZE * 2 / 3))
+            else if(position.X > (x + (float)CELL_SIZE * 2 / 3) && CellsSet.ContainsKey(new Vector2(x + CELL_SIZE, y)))
             {                   
                 result = result.Concat(CellsSet[new Vector2(x + CELL_SIZE, y)].TerrainVectors.ToArray()).ToArray();                                 
             }
 
-            if (position.Z < (y + (float)CELL_SIZE / 3))
+            if (position.Z < (y + (float)CELL_SIZE / 3) && CellsSet.ContainsKey(new Vector2(x, y - CELL_SIZE)))
             {                
                 result = result.Concat(CellsSet[new Vector2(x, y - CELL_SIZE)].TerrainVectors.ToArray()).ToArray();                                 
             }
-            else if(position.Z > (y + (float)CELL_SIZE * 2 / 3))
+            else if(position.Z > (y + (float)CELL_SIZE * 2 / 3) && CellsSet.ContainsKey(new Vector2(x, y + CELL_SIZE)))
             {   
                 result = result.Concat(CellsSet[new Vector2(x, y + CELL_SIZE)].TerrainVectors.ToArray()).ToArray();                                 
             }
@@ -114,7 +124,16 @@ namespace SurvivalGameServer
             int y = (int)position.Z;
             if (y % 2 != 0) y--;
 
-            return CellsSet[new Vector2(x, y)].AllColliders.ToArray();
+            Vector2 result = new Vector2 (x, y );
+
+            if (CellsSet.ContainsKey(result))
+            {
+                return CellsSet[new Vector2(x, y)].AllColliders.ToArray();
+            }
+            else
+            {
+                return Array.Empty<ICollider>();
+            }
         }
 
 

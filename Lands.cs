@@ -14,15 +14,33 @@ namespace SurvivalGameServer
 
         public Lands()
         {
-            ws = new WorldSystem(new Vector2(-6, -6), 26, 26, new Terrain());
+            ws = new WorldSystem(new Vector2(-50, -50), 50, 50, new Terrain());
         }
 
         public float GetWalkableYCoord(float X, float Y, float Z)
-        {
+        {            
             Vector3 vector = new Vector3(X,Y,Z);
             SortedDictionary<float, Vector3> vectors = new SortedDictionary<float, Vector3>();            
             Vector3[] terrainArray = ws.GetTerrainClosestVectors(vector);
-            
+            if (terrainArray.Length == 0) return 0;
+
+            //if equal height
+            float testY = 0;
+            int result = 0;
+            for (int i = 0; i < terrainArray.Length; i++)
+            {
+                if (i == 0)
+                {
+                    testY = terrainArray[i].Y;
+                }
+                else if (terrainArray[i].Y == testY)
+                {
+                    result++;
+                }
+            }
+            if (result == terrainArray.Length - 1) return testY;
+
+            //if different height
             for (int i = 0; i < terrainArray.Length; i++)
             {
                 float distance = Functions.Vector3Distance(terrainArray[i], vector);
@@ -47,7 +65,10 @@ namespace SurvivalGameServer
 
         public bool isColliding(Vector3 position, float radius)
         {            
+            if (ws.GetAllCollidersClosestVector(position).Length==0) return false;
+
             ICollider[] colliders = ws.GetAllCollidersClosestVector(position);
+
             for (int i = 0; i < colliders.Length; i++)
             {
                 if (colliders[i].isColliding(position, radius)) return true;

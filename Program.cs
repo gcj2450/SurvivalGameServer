@@ -17,7 +17,7 @@ namespace SurvivalGameServer
 
             //TEMPORARY=============================
             PlayerCharacter player = new PlayerCharacter(12345678);
-            player.SetNewPosition(new Vector3(5, 0, 5));
+            player.SetNewPosition(new Vector3(0, 0, 0));
             Globals.ActivePlayersByTicketID.Add(12345678, player);
             //======================================
 

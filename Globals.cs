@@ -27,7 +27,8 @@ namespace SurvivalGameServer
             None = 0,
             MoveFromClient = 1, //joystick press data
             MoveFromServer = 2,
-            GetClientUDPEndpoint = 3
+            GetClientUDPEndpoint = 3,
+            PlayerInitData = 4
         }
 
         public static void InitServerGlobals()

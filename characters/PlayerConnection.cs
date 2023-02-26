@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using SurvivalGameServer.connection;
 
 namespace SurvivalGameServer
 {
@@ -18,7 +17,7 @@ namespace SurvivalGameServer
         private Guid guid;
         private EndPoint endPoint;
         private System.Timers.Timer updateTimer;
-        private ConcurrentQueue<MovementPacketFromClient> movementPackets;
+        private ConcurrentQueue<MovementPacketFromClient> movementPacketsQueue;
         private MovementPacketFromClient currentMovementPacket;
 
         private Servers connections;
@@ -36,7 +35,7 @@ namespace SurvivalGameServer
             };
             updateTimer.AutoReset = true;            
 
-            movementPackets = new ConcurrentQueue<MovementPacketFromClient>();
+            movementPacketsQueue = new ConcurrentQueue<MovementPacketFromClient>();
 
             connections = Servers.GetInstance();
         }
@@ -55,27 +54,28 @@ namespace SurvivalGameServer
 
         public void AddMovementPacket(MovementPacketFromClient movementPacket)
         {            
-            movementPackets.Enqueue(movementPacket);
+            movementPacketsQueue.Enqueue(movementPacket);
         }
 
         private void updateEveryTick()
         {            
-            if (movementPackets.Count > 0)
+            if (movementPacketsQueue.Count > 0)
             {
-                bool result = movementPackets.TryDequeue(out currentMovementPacket);
-
+                bool result = movementPacketsQueue.TryDequeue(out currentMovementPacket);
+                
                 if (result)
                 {
                     HandleMovement?.Invoke(this, currentMovementPacket);                    
                     isUpdated = true;
                 }
-                movementPackets.Clear();
+                
+                movementPacketsQueue.Clear();
                 currentMovementPacket.Horizontal = 0;
                 currentMovementPacket.Vertical = 0;
             }
-
+            
             if (isUpdated)
-            {
+            {                
                 MovementPacketFromServer mover = new MovementPacketFromServer(
                     PlayerCharacter.Position.X,
                     PlayerCharacter.Position.Y,
@@ -85,6 +85,7 @@ namespace SurvivalGameServer
                     PlayerCharacter.Rotation.Z);
                 
                 connections.SendUDP(ProtobufSchemes.SerializeProtoBuf(mover), SecretKey, endPoint, Globals.PacketCode.MoveFromServer);
+                
                 isUpdated = false;
             }
             

@@ -1,5 +1,4 @@
-﻿using SurvivalGameServer.connection;
-using System.Numerics;
+﻿using System.Numerics;
 
 namespace SurvivalGameServer
 {
@@ -33,22 +32,30 @@ namespace SurvivalGameServer
         }
 
         public void SetPositionForPlayerCharacter(PlayerConnection playerConnection, MovementPacketFromClient movementPacket)
-        {
+        {            
             float brutto_angle = MathF.Atan2(movementPacket.Horizontal, movementPacket.Vertical) * 180 / MathF.PI;
-            
+
             float new_position_x = playerConnection.PlayerCharacter.Position.X 
                 + MathF.Sin(brutto_angle * Functions.Deg2Rad) / 10f * playerConnection.PlayerCharacter.Speed;
             
             float new_position_z = playerConnection.PlayerCharacter.Position.Z 
                 + MathF.Cos(brutto_angle * Functions.Deg2Rad) / 10f * playerConnection.PlayerCharacter.Speed;
-            
-            if (lands.isColliding(new Vector3(new_position_x, 0, new_position_z), 0.3f)) { return; }
+            try
+            {
+                if (lands.isColliding(new Vector3(new_position_x, 0, new_position_z), 0.3f)) { return; }
 
-            playerConnection.PlayerCharacter.SetNewOrientation(
-                new_position_x, 
-                lands.GetWalkableYCoord(new_position_x, playerConnection.PlayerCharacter.Position.Y, new_position_z), 
-                new_position_z, 
-                0, brutto_angle, 0);            
+                playerConnection.PlayerCharacter.SetNewOrientation(
+                    new_position_x,
+                    lands.GetWalkableYCoord(new_position_x, playerConnection.PlayerCharacter.Position.Y, new_position_z),
+                    new_position_z,
+                    0, brutto_angle, 0);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            
+            
         }
 
     }

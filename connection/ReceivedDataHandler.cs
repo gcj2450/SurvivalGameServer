@@ -6,8 +6,9 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Net.Sockets;
 
-namespace SurvivalGameServer.connection
+namespace SurvivalGameServer
 {
     internal class ReceivedDataHandler
     {
@@ -124,7 +125,7 @@ namespace SurvivalGameServer.connection
                     encryption.Dispose();
 
                     GameServer.GetGameServerInstance().AddPlayerCharacter(playerConnection.PlayerCharacter);
-
+                    
                     Globals.Logger.Write(Serilog.Events.LogEventLevel.Information,
                         $"successfully exchanged secret key and network ID with {endpoint}");
                     Globals.Logger.Write(Serilog.Events.LogEventLevel.Information,

@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using SurvivalGameServer.connection;
 
 namespace SurvivalGameServer
 {
@@ -81,6 +80,19 @@ namespace SurvivalGameServer
         {
             if (tcpServer.FindSession(id) != null)
             {
+                return tcpServer.FindSession(id).SendAsync(data);
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool SendTCP(byte[] data, byte[] key, Guid id, Globals.PacketCode code)
+        {
+            if (tcpServer.FindSession(id) != null)
+            {
+                Encryption.Encode(ref data, key, code);
                 return tcpServer.FindSession(id).SendAsync(data);
             }
             else

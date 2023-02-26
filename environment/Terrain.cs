@@ -17,15 +17,19 @@ namespace SurvivalGameServer
 
         private RoundCollider[] roundColliders = new RoundCollider[]
         {
-            new RoundCollider(new Vector3(7.5f, 0, 1.8f), 0.5f)
+            new RoundCollider(new Vector3(1000.5f, 1000, 1000.8f), 0.1f)
         };
 
         private RectCollider[] rectColliders = new RectCollider[]
         {
-            new RectCollider(new Vector3(1, 0, 3.5f), new Vector3(3, 0, 4.5f))
+            new RectCollider(new Vector3(1000, 0, 1000f), new Vector3(1000, 0, 1000.5f))
         };
 
         private Vector3[] grounds = new Vector3[] {
+
+            new Vector3(1000f, 1000.02f, 1000f),
+            
+            /*
             new Vector3(10.00f,0.02f,1.43f),
             new Vector3(10.00f,0.00f,0.00f),
             new Vector3(8.57f,0.00f,0.00f),
@@ -90,6 +94,7 @@ namespace SurvivalGameServer
             new Vector3(1.43f,0.00f,10.00f),
             new Vector3(0.00f,0.00f,8.57f),
             new Vector3(0.00f,0.00f,10.00f)
+            */
         };
     }
 }
