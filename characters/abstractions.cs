@@ -9,11 +9,13 @@ namespace SurvivalGameServer
 {
     public abstract class Characters
     {
-        public readonly int Id;
-        public uint CurrentHealth { get; private set; }
-        public uint MaxHealth { get; private set; }
-        public uint Level { get; private set; }
-        public uint Armor { get; private set; }
+        public int NetworkId { get; private set; }
+        public ushort AppearanceId { get; private set; }
+        public string Name { get; private set; }
+        public ushort CurrentHealth { get; private set; }
+        public ushort MaxHealth { get; private set; }
+        public ushort Level { get; private set; }
+        public ushort Armor { get; private set; }
         public Vector3 Position { get; private set; }
         public Vector3 Rotation { get; private set; }        
         private float speed = 1f;

@@ -113,4 +113,35 @@ namespace SurvivalGameServer
         public float RotationZ { get; set; }
 
     }
+
+    [ProtoContract]
+    public struct MainPlayerDataPacket
+    {
+        public MainPlayerDataPacket(PlayerCharacter player)
+        {
+            NetworkId = player.NetworkId;
+            AppearanceId = player.AppearanceId;
+            Name = player.Name;
+            CurrentHealth = player.CurrentHealth;
+            MaxHealth = player.MaxHealth;
+            Level = player.Level;
+            Armor = player.Armor;
+        }
+
+        [ProtoMember(1)]
+        public int NetworkId { get; set; }
+        [ProtoMember(2)]
+        public ushort AppearanceId { get; set; }
+        [ProtoMember(3)]
+        public string Name { get; set; }
+        [ProtoMember(4)]
+        public ushort CurrentHealth { get; set; }
+        [ProtoMember(5)]
+        public ushort MaxHealth { get; set; }
+        [ProtoMember(6)]
+        public ushort Level { get; set; }
+        [ProtoMember(7)]
+        public ushort Armor { get; set; }
+
+    }
 }

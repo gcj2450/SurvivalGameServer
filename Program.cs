@@ -16,7 +16,8 @@ namespace SurvivalGameServer
             Servers connections = Servers.GetInstance();
 
             //TEMPORARY=============================
-            PlayerCharacter player = new PlayerCharacter(12345678);
+            PlayerCharacter player = new PlayerCharacter();
+            player.SetTicketConnection(12345678);
             player.SetNewPosition(new Vector3(0, 0, 0));
             Globals.ActivePlayersByTicketID.Add(12345678, player);
             //======================================

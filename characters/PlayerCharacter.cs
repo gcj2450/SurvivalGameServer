@@ -6,10 +6,15 @@ using System.Threading.Tasks;
 
 namespace SurvivalGameServer
 {
-    internal class PlayerCharacter : Characters
+    public class PlayerCharacter : Characters
     {
         public PlayerConnection Connection { get; private set; }
-        public PlayerCharacter(int ticket) 
+        public PlayerCharacter() 
+        {
+            
+        }
+
+        public void SetTicketConnection(int ticket)
         {
             Connection = new PlayerConnection(ticket, this);
         }

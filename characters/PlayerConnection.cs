@@ -6,17 +6,17 @@ using System.Net;
 
 namespace SurvivalGameServer
 {
-    internal class PlayerConnection
+    public class PlayerConnection
     {
         public readonly int TicketID;
         public byte[] NetworkID { get; private set; }
         public byte[] SecretKey { get; private set; }
         public bool isUpdated;
-        public Action<PlayerConnection, MovementPacketFromClient> HandleMovement;
+        //public Action<PlayerConnection, MovementPacketFromClient> HandleMovement;
         
         private Guid guid;
         private EndPoint endPoint;
-        private System.Timers.Timer updateTimer;
+        //private System.Timers.Timer updateTimer;
         private ConcurrentQueue<MovementPacketFromClient> movementPacketsQueue;
         private MovementPacketFromClient currentMovementPacket;
 
@@ -29,11 +29,13 @@ namespace SurvivalGameServer
             TicketID = ticket;
             PlayerCharacter = playerCharacter;
 
+            /*
             updateTimer = new System.Timers.Timer(Globals.TICKi);
             updateTimer.Elapsed += delegate {
                 updateEveryTick();
             };
-            updateTimer.AutoReset = true;            
+            updateTimer.AutoReset = true;     
+            */
 
             movementPacketsQueue = new ConcurrentQueue<MovementPacketFromClient>();
 
@@ -48,7 +50,7 @@ namespace SurvivalGameServer
         public void SetEndpointForUDP(EndPoint point)
         {
             endPoint = point;
-            updateTimer.Enabled = true;
+            //updateTimer.Enabled = true;
         }
 
 
@@ -57,6 +59,7 @@ namespace SurvivalGameServer
             movementPacketsQueue.Enqueue(movementPacket);
         }
 
+        /*
         private void updateEveryTick()
         {            
             if (movementPacketsQueue.Count > 0)
@@ -72,10 +75,33 @@ namespace SurvivalGameServer
                 movementPacketsQueue.Clear();
                 currentMovementPacket.Horizontal = 0;
                 currentMovementPacket.Vertical = 0;
+            }           
+        }
+        */
+
+        public void HandleMovementPacketsQueue(Action<PlayerConnection, MovementPacketFromClient> handleMovement)
+        {
+            if (movementPacketsQueue.Count > 0)
+            {
+                bool result = movementPacketsQueue.TryDequeue(out currentMovementPacket);
+
+                if (result)
+                {
+                    //HandleMovement?.Invoke(this, currentMovementPacket);
+                    handleMovement?.Invoke(this, currentMovementPacket);
+                    isUpdated = true;
+                }
+
+                movementPacketsQueue.Clear();
+                currentMovementPacket.Horizontal = 0;
+                currentMovementPacket.Vertical = 0;
             }
-            
+        }
+
+        public void SendUpdatedMovementToPlayer()
+        {
             if (isUpdated)
-            {                
+            {
                 MovementPacketFromServer mover = new MovementPacketFromServer(
                     PlayerCharacter.Position.X,
                     PlayerCharacter.Position.Y,
@@ -83,12 +109,11 @@ namespace SurvivalGameServer
                     PlayerCharacter.Rotation.X,
                     PlayerCharacter.Rotation.Y,
                     PlayerCharacter.Rotation.Z);
-                
+
                 connections.SendUDP(ProtobufSchemes.SerializeProtoBuf(mover), SecretKey, endPoint, Globals.PacketCode.MoveFromServer);
-                
+
                 isUpdated = false;
             }
-            
         }
 
 
