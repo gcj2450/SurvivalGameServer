@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Numerics;
 
 namespace SurvivalGameServer
@@ -6,7 +7,7 @@ namespace SurvivalGameServer
     internal class GameServer
     {
         private Lands lands;
-        private List<PlayerCharacter> playerCharacter;
+        private List<PlayerCharacter> playerCharacters;
         private static GameServer gameServerInstance;
         
         //timer for movement update control
@@ -15,7 +16,7 @@ namespace SurvivalGameServer
         private GameServer()
         {
             lands = new Lands();
-            playerCharacter = new List<PlayerCharacter>();
+            playerCharacters = new List<PlayerCharacter>();
 
             updateMovementTimer = new System.Timers.Timer(Globals.TICKi);
             updateMovementTimer.Elapsed += delegate {
@@ -27,10 +28,9 @@ namespace SurvivalGameServer
 
         private void updateMovementForPlayers()
         {
-            for (int i = 0; i < playerCharacter.Count; i++)
+            for (int i = 0; i < playerCharacters.Count; i++)
             {
-                playerCharacter[i].Connection.HandleMovementPacketsQueue(SetPositionForPlayerCharacter);
-                playerCharacter[i].Connection.SendUpdatedMovementToPlayer();
+                playerCharacters[i].Connection.HandleMovementPacketsQueue(SetPositionForPlayerCharacter);
             }
         }
 
@@ -45,19 +45,19 @@ namespace SurvivalGameServer
 
         public void AddPlayerCharacter(PlayerCharacter character)
         {
-            playerCharacter.Add(character);
-            //character.Connection.HandleMovement = SetPositionForPlayerCharacter;
+            playerCharacters.Add(character);            
         }
 
         public void SetPositionForPlayerCharacter(PlayerConnection playerConnection, MovementPacketFromClient movementPacket)
-        {            
+        {
+            const float speedKoeff = 1.5f;
             float brutto_angle = MathF.Atan2(movementPacket.Horizontal, movementPacket.Vertical) * 180 / MathF.PI;
 
             float new_position_x = playerConnection.PlayerCharacter.Position.X 
-                + MathF.Sin(brutto_angle * Functions.Deg2Rad) / 10f * playerConnection.PlayerCharacter.Speed;
+                + MathF.Sin(brutto_angle * Functions.Deg2Rad) / 10f * playerConnection.PlayerCharacter.Speed * speedKoeff;
             
             float new_position_z = playerConnection.PlayerCharacter.Position.Z 
-                + MathF.Cos(brutto_angle * Functions.Deg2Rad) / 10f * playerConnection.PlayerCharacter.Speed;
+                + MathF.Cos(brutto_angle * Functions.Deg2Rad) / 10f * playerConnection.PlayerCharacter.Speed * speedKoeff;
             
                 if (lands.isColliding(new Vector3(new_position_x, 0, new_position_z), 0.3f)) { return; }
 

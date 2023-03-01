@@ -89,59 +89,82 @@ namespace SurvivalGameServer
     [ProtoContract]
     public struct MovementPacketFromServer
     {
-        public MovementPacketFromServer(float positionX, float positionY, float positionZ, float rotationX, float rotationY, float rotationZ)
+        public MovementPacketFromServer(uint objectId)
         {
+            ObjectId = objectId;
+            PacketId = 0;
+            PositionX = 0;
+            PositionY = 0;
+            PositionZ = 0;
+            RotationX = 0;
+            RotationY = 0;
+            RotationZ = 0;
+        }
+
+        public void Update(long objectId, float positionX, float positionY, float positionZ, float rotationY)
+        {
+            ObjectId = objectId;
+            PacketId++;
             PositionX = positionX;
             PositionY = positionY;
             PositionZ = positionZ;
-            RotationX = rotationX;
+            RotationX = 0;
             RotationY = rotationY;
-            RotationZ = rotationZ;
+            RotationZ = 0;
         }
 
         [ProtoMember(1)]
-        public float PositionX { get; set; }
+        public uint PacketId { get; set; }
         [ProtoMember(2)]
-        public float PositionY { get; set; }
+        public long ObjectId { get; set; }
         [ProtoMember(3)]
-        public float PositionZ { get; set; }
+        public float PositionX { get; set; }
         [ProtoMember(4)]
-        public float RotationX { get; set; }
+        public float PositionY { get; set; }
         [ProtoMember(5)]
-        public float RotationY { get; set; }
+        public float PositionZ { get; set; }
         [ProtoMember(6)]
+        public float RotationX { get; set; }
+        [ProtoMember(7)]
+        public float RotationY { get; set; }
+        [ProtoMember(8)]
         public float RotationZ { get; set; }
 
     }
 
     [ProtoContract]
-    public struct MainPlayerDataPacket
+    public struct PlayerDataInitial
     {
-        public MainPlayerDataPacket(PlayerCharacter player)
+        public PlayerDataInitial(PlayerCharacter player)
         {
-            NetworkId = player.NetworkId;
+            ObjectId = player.ObjectId;
             AppearanceId = player.AppearanceId;
             Name = player.Name;
-            CurrentHealth = player.CurrentHealth;
-            MaxHealth = player.MaxHealth;
-            Level = player.Level;
-            Armor = player.Armor;
+            PositionX = player.Position.X;
+            PositionY = player.Position.Y;
+            PositionZ = player.Position.Z;
+            RotationX = player.Rotation.X;
+            RotationY = player.Rotation.Y;
+            RotationZ = player.Rotation.Z;
         }
 
         [ProtoMember(1)]
-        public int NetworkId { get; set; }
+        public long ObjectId { get; set; }
         [ProtoMember(2)]
         public ushort AppearanceId { get; set; }
         [ProtoMember(3)]
         public string Name { get; set; }
         [ProtoMember(4)]
-        public ushort CurrentHealth { get; set; }
+        public float PositionX { get; set; }
         [ProtoMember(5)]
-        public ushort MaxHealth { get; set; }
+        public float PositionY { get; set; }
         [ProtoMember(6)]
-        public ushort Level { get; set; }
+        public float PositionZ { get; set; }
         [ProtoMember(7)]
-        public ushort Armor { get; set; }
-
+        public float RotationX { get; set; }
+        [ProtoMember(8)]
+        public float RotationY { get; set; }
+        [ProtoMember(9)]
+        public float RotationZ { get; set; }
     }
 }

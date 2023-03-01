@@ -28,14 +28,15 @@ namespace SurvivalGameServer
             }
 
             //packets with codes
-            if (data.Length > 0 && Globals.ActivePlayersByNetworID.ContainsKey(networkID)/* && packetCode == Globals.PacketCode.MoveFromClient*/)
+            if (data.Length > 0 && Globals.ActivePlayersByNetworID.ContainsKey(networkID))
             {
                 switch (packetCode)
                 {
                     case Globals.PacketCode.MoveFromClient:
+                        
                         Encryption.Decode(ref packet, Globals.ActivePlayersByNetworID[networkID].SecretKey);
-                        MovementPacketFromClient movementPacket = ProtobufSchemes.DeserializeProtoBuf<MovementPacketFromClient>(packet, endpoint);
-                        Globals.ActivePlayersByNetworID[networkID].AddMovementPacket(movementPacket);
+                        Globals.ActivePlayersByNetworID[networkID]
+                            .AddMovementPacket(ProtobufSchemes.DeserializeProtoBuf<MovementPacketFromClient>(packet, endpoint));
                         break;
 
                     case Globals.PacketCode.GetClientUDPEndpoint:
@@ -125,7 +126,9 @@ namespace SurvivalGameServer
                     encryption.Dispose();
 
                     GameServer.GetGameServerInstance().AddPlayerCharacter(playerConnection.PlayerCharacter);
-                    
+                    playerConnection.SendMainPlayerData();
+
+
                     Globals.Logger.Write(Serilog.Events.LogEventLevel.Information,
                         $"successfully exchanged secret key and network ID with {endpoint}");
                     Globals.Logger.Write(Serilog.Events.LogEventLevel.Information,

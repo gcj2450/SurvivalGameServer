@@ -15,12 +15,23 @@ namespace SurvivalGameServer
             //init servers
             Servers connections = Servers.GetInstance();
 
-            //TEMPORARY=============================
-            PlayerCharacter player = new PlayerCharacter();
+            //TEMPORARY===============JUST FOR TEST===============
+            PlayerCharacter player = new PlayerCharacter(
+                Globals.GlobalTimer.ElapsedMilliseconds,
+                1,
+                "Main Player",
+                100,
+                100,
+                1,
+                0,
+                new Vector3(0,0,0),
+                new Vector3(0, 0, 0),
+                1
+                );
             player.SetTicketConnection(12345678);
             player.SetNewPosition(new Vector3(0, 0, 0));
             Globals.ActivePlayersByTicketID.Add(12345678, player);
-            //======================================
+            //====================================================
 
             //init game core
             GameServer gameServer = GameServer.GetGameServerInstance();

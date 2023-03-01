@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Net.Sockets;
 
 namespace SurvivalGameServer
 {
@@ -108,6 +109,16 @@ namespace SurvivalGameServer
             //Console.WriteLine(string.Join('=', data));
             
             return udpServer.SendAsync(endpoint, data);
+        }
+
+        public bool SendUDPMovementPacketFromServer(MovementPacketFromServer packet, byte[] secretKey, EndPoint endpoint)
+        {
+            return SendUDP(ProtobufSchemes.SerializeProtoBuf(packet), secretKey, endpoint, Globals.PacketCode.MoveFromServer);
+        }
+
+        public bool SendTCPInitialPlayerData(PlayerDataInitial packet, byte[] secretKey, Guid id)
+        {
+            return SendTCP(ProtobufSchemes.SerializeProtoBuf(packet), secretKey, id, Globals.PacketCode.InitialPlayerData);
         }
     }
 }

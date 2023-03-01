@@ -9,7 +9,7 @@ namespace SurvivalGameServer
 {
     public abstract class Characters
     {
-        public int NetworkId { get; private set; }
+        public long ObjectId { get; private set; }
         public ushort AppearanceId { get; private set; }
         public string Name { get; private set; }
         public ushort CurrentHealth { get; private set; }
@@ -35,7 +35,24 @@ namespace SurvivalGameServer
             }
         }
 
-        public Characters(){}
+        //public Characters(){}
+                
+        protected Characters(
+            long objectId, ushort appearanceId, string name, ushort currentHealth, ushort maxHealth, 
+            ushort level, ushort armor, Vector3 position, Vector3 rotation, float speed)
+        {
+            ObjectId = objectId;
+            AppearanceId = appearanceId;
+            Name = name;
+            CurrentHealth = currentHealth;
+            MaxHealth = maxHealth;
+            Level = level;
+            Armor = armor;
+            Position = position;
+            Rotation = rotation;
+            Speed = speed;
+        }
+
         public void SetNewOrientation(Vector3 position, Vector3 rotation)
         {
             Position = position;
