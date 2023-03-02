@@ -10,7 +10,7 @@ namespace SurvivalGameServer
     public class WorldSystem
     {
         private Dictionary<Vector2, Cells> CellsSet = new Dictionary<Vector2, Cells>();
-        public const int CELL_SIZE = 2;
+        public const int CELL_SIZE = 1;
         private Vector2 startPoint;
         private int worldWidth;
         private int worldHeight;
@@ -61,10 +61,10 @@ namespace SurvivalGameServer
         public Cells GetCell(Vector3 position)
         {
             int x = (int)position.X;
-            if (x % 2 != 0) x--;
+            //if (x % 2 != 0) x--;
 
             int y = (int)position.Z;
-            if (y % 2 != 0) y--;
+            //if (y % 2 != 0) y--;
 
             Vector2 result = new Vector2(x, y);
 
@@ -83,10 +83,10 @@ namespace SurvivalGameServer
             Vector3[] result = Array.Empty<Vector3>();
 
             int x = (int)position.X;
-            if (x % 2 != 0) x--;
+            //if (x % 2 != 0) x--;
 
             int y = (int)position.Z;
-            if (y % 2 != 0) y--;
+            //if (y % 2 != 0) y--;
                         
             Vector2 preresult = new Vector2(x, y);
 
@@ -119,10 +119,10 @@ namespace SurvivalGameServer
         public ICollider[] GetAllCollidersClosestVector(Vector3 position)
         {
             int x = (int)position.X;
-            if (x % 2 != 0) x--;
+            //if (x % 2 != 0) x--;
 
             int y = (int)position.Z;
-            if (y % 2 != 0) y--;
+            //if (y % 2 != 0) y--;
 
             Vector2 result = new Vector2 (x, y );
 
