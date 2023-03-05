@@ -78,10 +78,14 @@ namespace SurvivalGameServer
             connections.SendUDPMovementPacketFromServer(movementPacketFromServer, SecretKey, endPoint);
         }
 
-        public void SendMainPlayerData()
+        public async void SendMainPlayerData()
         {
             connections.SendTCPInitialPlayerData(
                 new PlayerDataInitial(PlayerCharacter), SecretKey, guid);
+
+            await Task.Delay(Globals.TICKi);
+
+            connections.SendUDPMovementPacketFromServer(movementPacketFromServer, SecretKey, endPoint);
         }
 
     }

@@ -34,6 +34,7 @@ namespace SurvivalGameServer
         protected override void OnReceived(byte[] buffer, long offset, long size)
         {
             //string message = Encoding.UTF8.GetString(buffer, (int)offset, (int)size);
+            //
             //Console.WriteLine(string.Join('=', Encoding.UTF8.GetBytes(message)));
             //Console.WriteLine("Incoming: " + message);
             //Console.WriteLine(size);

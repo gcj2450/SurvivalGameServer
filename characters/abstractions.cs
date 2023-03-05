@@ -35,8 +35,10 @@ namespace SurvivalGameServer
             }
         }
 
+        public byte AnimationId { get; private set; }
+
         //public Characters(){}
-                
+
         protected Characters(
             long objectId, ushort appearanceId, string name, ushort currentHealth, ushort maxHealth, 
             ushort level, ushort armor, Vector3 position, Vector3 rotation, float speed)
