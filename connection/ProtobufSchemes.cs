@@ -92,7 +92,7 @@ namespace SurvivalGameServer
         public MovementPacketFromServer(uint objectId)
         {
             ObjectId = objectId;
-            PacketId = 0;
+            PacketOrder = 0;
             PositionX = 0;
             PositionY = 0;
             PositionZ = 0;
@@ -104,7 +104,7 @@ namespace SurvivalGameServer
         public void Update(long objectId, float positionX, float positionY, float positionZ, float rotationY)
         {
             ObjectId = objectId;
-            PacketId++;
+            PacketOrder++;
             PositionX = positionX;
             PositionY = positionY;
             PositionZ = positionZ;
@@ -114,7 +114,7 @@ namespace SurvivalGameServer
         }
 
         [ProtoMember(1)]
-        public uint PacketId { get; set; }
+        public uint PacketOrder { get; set; }
         [ProtoMember(2)]
         public long ObjectId { get; set; }
         [ProtoMember(3)]
