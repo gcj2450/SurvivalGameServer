@@ -9,7 +9,8 @@ namespace SurvivalGameServer
 {
     internal class Functions
     {
-        public const float Deg2Rad = (float)Math.PI / 180f;
+        public const float Deg2Rad = 0.017453292f; //(float)Math.PI / 180f;
+        public const float is180_pi = 57.295776f; //(float)Math.PI / 180f;
 
         public static void normalize_to_vector(ref float[] vector_axis)
         {

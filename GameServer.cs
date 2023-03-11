@@ -52,10 +52,10 @@ namespace SurvivalGameServer
         {
             float speedKoeff = MathF.Sqrt(
                 movementPacket.Horizontal * movementPacket.Horizontal + movementPacket.Vertical * movementPacket.Vertical);
-
+                        
             speedKoeff = speedKoeff <= 3 ? speedKoeff : 3;
 
-            float brutto_angle = MathF.Atan2(movementPacket.Horizontal, movementPacket.Vertical) * 180 / MathF.PI;
+            float brutto_angle = MathF.Atan2(movementPacket.Horizontal, movementPacket.Vertical) * Functions.is180_pi;
 
             float new_position_x = playerConnection.PlayerCharacter.Position.X 
                 + MathF.Sin(brutto_angle * Functions.Deg2Rad) / 10f * playerConnection.PlayerCharacter.Speed * speedKoeff * 0.75f;
