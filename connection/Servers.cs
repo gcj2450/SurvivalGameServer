@@ -67,48 +67,88 @@ namespace SurvivalGameServer
 
         public bool SendTCP(byte[] data, Guid id)
         {
-            if (tcpServer.FindSession(id) != null)
+            try
             {
-                return tcpServer.FindSession(id).SendAsync(data);
+                if (tcpServer.FindSession(id) != null)
+                {
+                    return tcpServer.FindSession(id).SendAsync(data);
+                }
+                else
+                {
+                    return false;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return false;
+                Globals.Logger.Write(Serilog.Events.LogEventLevel.Error, $"error sending TCP by SendTCP(byte[] data, Guid id)");
+                Globals.Logger.Write(Serilog.Events.LogEventLevel.Error, ex.ToString());
             }
+
+            return false;
         }
 
         public bool SendTCP(string data, Guid id)
         {
-            if (tcpServer.FindSession(id) != null)
+            try
             {
-                return tcpServer.FindSession(id).SendAsync(data);
+                if (tcpServer.FindSession(id) != null)
+                {
+                    return tcpServer.FindSession(id).SendAsync(data);
+                }
+                else
+                {
+                    return false;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return false;
+                Globals.Logger.Write(Serilog.Events.LogEventLevel.Error, $"error sending TCP by SendTCP(string data, Guid id)");
+                Globals.Logger.Write(Serilog.Events.LogEventLevel.Error, ex.ToString());
             }
+
+            return false;
         }
 
         public bool SendTCP(byte[] data, byte[] key, Guid id, Globals.PacketCode code)
         {
-            if (tcpServer.FindSession(id) != null)
+            try
             {
-                Encryption.Encode(ref data, key, code);
-                return tcpServer.FindSession(id).SendAsync(data);
+                if (tcpServer.FindSession(id) != null)
+                {
+                    Encryption.Encode(ref data, key, code);
+                    return tcpServer.FindSession(id).SendAsync(data);
+                }
+                else
+                {
+                    return false;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return false;
+                Globals.Logger.Write(Serilog.Events.LogEventLevel.Error, $"error sending TCP by SendTCP(byte[] data, byte[] key, Guid id, Globals.PacketCode code)");
+                Globals.Logger.Write(Serilog.Events.LogEventLevel.Error, ex.ToString());
             }
+
+            return false;
         }
 
         public bool SendUDP(byte[] data, byte[] key, EndPoint endpoint, Globals.PacketCode code)
         {
-            //Console.WriteLine(string.Join('=', data));
-            Encryption.Encode(ref data, key, code);
-            //Console.WriteLine(string.Join('=', data));
-            
-            return udpServer.SendAsync(endpoint, data);
+            try
+            {
+                //Console.WriteLine(string.Join('=', data));
+                Encryption.Encode(ref data, key, code);
+                //Console.WriteLine(string.Join('=', data));
+
+                return udpServer.SendAsync(endpoint, data);
+            }
+            catch (Exception ex)
+            {
+                Globals.Logger.Write(Serilog.Events.LogEventLevel.Error, $"error sending UDP by SendUDP(byte[] data, byte[] key, EndPoint endpoint, Globals.PacketCode code)");
+                Globals.Logger.Write(Serilog.Events.LogEventLevel.Error, ex.ToString());
+            }
+
+            return false;
         }
 
         public bool SendUDPMovementPacketFromServer(MovementPacketFromServer packet, byte[] secretKey, EndPoint endpoint)

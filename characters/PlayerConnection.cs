@@ -17,6 +17,8 @@ namespace SurvivalGameServer
 
         private ConcurrentQueue<MovementPacketFromClient> movementPacketsQueue;
         private MovementPacketFromClient currentMovementPacket;
+        private MovementPacketFromClient previousMovementPacket;
+        private int possibleLostPackets;
         private MovementPacketFromServer movementPacketFromServer;
 
         private Servers connections;
@@ -51,18 +53,27 @@ namespace SurvivalGameServer
         public void HandleMovementPacketsQueue(Action<PlayerConnection, MovementPacketFromClient> handleMovement)
         {            
             if (movementPacketsQueue.Count > 0)
-            {                
+            {
+                possibleLostPackets = 0;
                 bool result = movementPacketsQueue.TryDequeue(out currentMovementPacket);
 
                 if (result)
                 {                    
                     handleMovement?.Invoke(this, currentMovementPacket);
                 }
-
+                previousMovementPacket = currentMovementPacket;
                 movementPacketsQueue.Clear();
-                //currentMovementPacket.Horizontal = 0;
-                //currentMovementPacket.Vertical = 0;
                 SendUpdatedMovementToPlayer();
+            }
+            else
+            {
+                if (possibleLostPackets < 5)
+                {
+                    handleMovement?.Invoke(this, previousMovementPacket);
+                    SendUpdatedMovementToPlayer();
+                }
+
+                possibleLostPackets++;
             }
         }
 
@@ -82,10 +93,17 @@ namespace SurvivalGameServer
         {
             connections.SendTCPInitialPlayerData(
                 new PlayerDataInitial(PlayerCharacter), SecretKey, guid);
-
-            await Task.Delay(Globals.TICKi);
-
-            connections.SendUDPMovementPacketFromServer(movementPacketFromServer, SecretKey, endPoint);
+            
+            for (float i = 0; i < 5000; i++)
+            {
+                if (endPoint != null)
+                {
+                    connections.SendUDPMovementPacketFromServer(movementPacketFromServer, SecretKey, endPoint);
+                    break;
+                }
+                
+                await Task.Delay(Globals.TICKi);
+            }            
         }
 
     }

@@ -49,7 +49,7 @@ namespace SurvivalGameServer
         }
 
         public void SetPositionForPlayerCharacter(PlayerConnection playerConnection, MovementPacketFromClient movementPacket)
-        {
+        {            
             float speedKoeff = MathF.Sqrt(
                 movementPacket.Horizontal * movementPacket.Horizontal + movementPacket.Vertical * movementPacket.Vertical);
                         
