@@ -35,6 +35,7 @@ namespace SurvivalGameServer
                     case Globals.PacketCode.MoveFromClient:
                         
                         Encryption.Decode(ref packet, Globals.ActivePlayersByNetworID[networkID].SecretKey);
+
                         Globals.ActivePlayersByNetworID[networkID]
                             .AddMovementPacket(ProtobufSchemes.DeserializeProtoBuf<MovementPacketFromClient>(packet, endpoint));
                         break;

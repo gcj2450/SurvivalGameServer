@@ -18,6 +18,7 @@ namespace SurvivalGameServer
         private ConcurrentQueue<MovementPacketFromClient> movementPacketsQueue;
         private MovementPacketFromClient currentMovementPacket;
         private MovementPacketFromClient previousMovementPacket;
+        private MovementPacketFromClient agregatePacket;
         private int possibleLostPackets;
         private MovementPacketFromServer movementPacketFromServer;
 
@@ -40,53 +41,87 @@ namespace SurvivalGameServer
             SecretKey = secretKey;
             guid = id;
         }
+
         public void SetEndpointForUDP(EndPoint point)
         {
             endPoint = point;
+            movementPacketsQueue.Clear();
+            currentMovementPacket.Clear();
+            previousMovementPacket.Clear();
+            agregatePacket.Clear();
         }
 
         public void AddMovementPacket(MovementPacketFromClient movementPacket)
-        {            
+        {
+            //Console.WriteLine(movementPacket.PacketId + " = " + movementPacket.Horizontal + " = " + movementPacket.Vertical + " = " + Globals.GlobalTimer.ElapsedMilliseconds);
+            if (movementPacket.Horizontal >= 999) movementPacket.Horizontal = 0;            
             movementPacketsQueue.Enqueue(movementPacket);
         }
 
         public void HandleMovementPacketsQueue(Action<PlayerConnection, MovementPacketFromClient> handleMovement)
-        {            
-            if (movementPacketsQueue.Count > 0)
-            {
-                possibleLostPackets = 0;
-                bool result = movementPacketsQueue.TryDequeue(out currentMovementPacket);
+        {
+            int movementPacketsQueueCount = movementPacketsQueue.Count;
 
-                if (result)
+            if (movementPacketsQueueCount > 0)
+            {
+                if (possibleLostPackets == 0)
                 {                    
-                    handleMovement?.Invoke(this, currentMovementPacket);
+                    movementPacketsQueue.TryDequeue(out currentMovementPacket);
+                    previousMovementPacket = currentMovementPacket;
                 }
-                previousMovementPacket = currentMovementPacket;
-                movementPacketsQueue.Clear();
-                SendUpdatedMovementToPlayer();
-            }
-            else
-            {
-                if (possibleLostPackets < 5)
+                else
                 {
-                    handleMovement?.Invoke(this, previousMovementPacket);
-                    SendUpdatedMovementToPlayer();
+                    int packetsToTake = (possibleLostPackets + 1) >= movementPacketsQueueCount ? movementPacketsQueueCount : (possibleLostPackets + 1);
+
+                    agregatePacket.Clear();
+                    currentMovementPacket.Clear();
+                    //Console.WriteLine( "decision: queue: " + movementPacketsQueueCount + "   cur queu: " + movementPacketsQueue.Count + "  taken:" + packetsToTake);
+                    foreach (var item in movementPacketsQueue)
+                    {
+                        //Console.WriteLine(packetsToTake + " ----------");
+                        movementPacketsQueue.TryDequeue(out agregatePacket);                        
+                        previousMovementPacket = agregatePacket;
+
+                        currentMovementPacket.PacketId = agregatePacket.PacketId;
+                        currentMovementPacket.Horizontal += agregatePacket.Horizontal;
+                        currentMovementPacket.Vertical += agregatePacket.Vertical;
+                        packetsToTake--;
+                        if (packetsToTake <= 0) break;
+                    }
+
+                    possibleLostPackets = 0;
+                }
+             
+                if (currentMovementPacket.Horizontal != 0 || currentMovementPacket.Vertical != 0)
+                {
+                    handleMovement?.Invoke(this, currentMovementPacket);                    
+                    SendUpdatedMovementToPlayer(currentMovementPacket);                        
                 }
 
-                possibleLostPackets++;
+                movementPacketsQueue.Clear();
+
             }
+            else if (previousMovementPacket.Horizontal != 0 || previousMovementPacket.Vertical != 0)
+            {                
+                possibleLostPackets++;
+                //Console.WriteLine("PREDICTION!!! - " + possibleLostPackets);
+            }            
         }
 
-        public void SendUpdatedMovementToPlayer()
-        {            
-            movementPacketFromServer.Update(
+        public void SendUpdatedMovementToPlayer(MovementPacketFromClient packet)
+        {
+            if (endPoint != null)
+            {
+                movementPacketFromServer.Update(
                 PlayerCharacter.ObjectId,
+                (uint)packet.PacketId,
                 PlayerCharacter.Position.X,
                 PlayerCharacter.Position.Y,
                 PlayerCharacter.Position.Z,
                 PlayerCharacter.Rotation.Y);
 
-            connections.SendUDPMovementPacketFromServer(movementPacketFromServer, SecretKey, endPoint);
+                connections.SendUDPMovementPacketFromServer(movementPacketFromServer, SecretKey, endPoint);
+            }                
         }
 
         public async void SendMainPlayerData()
@@ -98,6 +133,16 @@ namespace SurvivalGameServer
             {
                 if (endPoint != null)
                 {
+                    movementPacketFromServer.Update(
+                        PlayerCharacter.ObjectId,
+                        0,
+                        PlayerCharacter.Position.X,
+                        PlayerCharacter.Position.Y,
+                        PlayerCharacter.Position.Z,
+                        PlayerCharacter.Rotation.Y);
+
+                    //Console.WriteLine("started at: " + PlayerCharacter.Position);
+
                     connections.SendUDPMovementPacketFromServer(movementPacketFromServer, SecretKey, endPoint);
                     break;
                 }

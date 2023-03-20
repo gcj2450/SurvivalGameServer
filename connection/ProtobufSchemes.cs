@@ -35,6 +35,8 @@ namespace SurvivalGameServer
             {
                 using (var stream = new MemoryStream(data))
                 {
+                    
+
                     return Serializer.Deserialize<T>(stream);
                 }
             }
@@ -72,17 +74,28 @@ namespace SurvivalGameServer
     public struct MovementPacketFromClient
     {
         [ProtoMember(1)]
-        public float Horizontal { get; set; }
+        public int PacketId { get; set; }
         [ProtoMember(2)]
-        public float Vertical { get; set; }
+        public float Horizontal { get; set; }
         [ProtoMember(3)]
+        public float Vertical { get; set; }
+        [ProtoMember(4)]
         public bool isActionButtonOnePressed { get; set; }
 
         public MovementPacketFromClient(float horizontal, float vertical, bool isOnePressed)
         {
+            PacketId = 0;
             Horizontal = horizontal;
             Vertical = vertical;
             isActionButtonOnePressed = isOnePressed;
+        }
+
+        public void Clear()
+        {
+            PacketId = 0;
+            Horizontal = 0;
+            Vertical = 0;
+            isActionButtonOnePressed = false;
         }
     }
 
@@ -101,10 +114,10 @@ namespace SurvivalGameServer
             RotationZ = 0;
         }
 
-        public void Update(long objectId, float positionX, float positionY, float positionZ, float rotationY)
+        public void Update(long objectId, uint packetId, float positionX, float positionY, float positionZ, float rotationY)
         {
             ObjectId = objectId;
-            PacketOrder++;
+            PacketOrder = packetId;
             PositionX = positionX;
             PositionY = positionY;
             PositionZ = positionZ;
