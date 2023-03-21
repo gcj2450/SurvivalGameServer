@@ -71,7 +71,8 @@ namespace SurvivalGameServer
                 }
                 else
                 {
-                    int packetsToTake = (possibleLostPackets + 1) >= movementPacketsQueueCount ? movementPacketsQueueCount : (possibleLostPackets + 1);
+                    //int packetsToTake = (possibleLostPackets + 1) >= movementPacketsQueueCount ? movementPacketsQueueCount : (possibleLostPackets + 1);
+                    int packetsToTake = movementPacketsQueueCount;
 
                     agregatePacket.Clear();
                     currentMovementPacket.Clear();
@@ -85,8 +86,8 @@ namespace SurvivalGameServer
                         currentMovementPacket.PacketId = agregatePacket.PacketId;
                         currentMovementPacket.Horizontal += agregatePacket.Horizontal;
                         currentMovementPacket.Vertical += agregatePacket.Vertical;
-                        packetsToTake--;
-                        if (packetsToTake <= 0) break;
+                        //packetsToTake--;
+                        //if (packetsToTake <= 0) break;
                     }
 
                     possibleLostPackets = 0;
