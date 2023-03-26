@@ -126,7 +126,7 @@ namespace SurvivalGameServer
                     TemporaryEncryptionConnection.Remove(exchange.TemporaryKeyCode);
                     encryption.Dispose();
 
-                    GameServer.GetGameServerInstance().AddPlayerCharacter(playerConnection.PlayerCharacter);
+                    GameServer.GetGameServerInstance().AddPlayerCharacter(playerConnection.CurrentPlayerCharacter);
                     playerConnection.SendMainPlayerData();
 
 

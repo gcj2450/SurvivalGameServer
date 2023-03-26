@@ -28,6 +28,7 @@ namespace SurvivalGameServer
         
         protected override void OnSent(EndPoint endpoint, long sent)
         {
+            //Console.WriteLine(  sent);
             //ReceiveAsync();
         }
 

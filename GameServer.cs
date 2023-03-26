@@ -29,8 +29,21 @@ namespace SurvivalGameServer
         private void updateMovementForPlayers()
         {
             for (int i = 0; i < playerCharacters.Count; i++)
-            {                
+            {
+                
                 playerCharacters[i].Connection.HandleMovementPacketsQueue(SetPositionForPlayerCharacter);
+                
+                for (int j = 0; j < playerCharacters.Count; j++)
+                {
+                    if (playerCharacters[i].ObjectId != playerCharacters[j].ObjectId)
+                    {
+                        playerCharacters[i].Connection.ListOfMovementPackets.AddOrUpdate(playerCharacters[j].Connection.movementPacketFromServer);
+                    }
+                }
+                
+
+                playerCharacters[i].Connection.SendUpdatedMovementToPlayer();
+
             }
         }
 
@@ -59,21 +72,21 @@ namespace SurvivalGameServer
 
             float brutto_angle = MathF.Atan2(movementPacket.Horizontal, movementPacket.Vertical) * Functions.is180_pi;
 
-            float new_position_x = playerConnection.PlayerCharacter.Position.X 
-                + MathF.Sin(brutto_angle * Functions.Deg2Rad) / 10f * playerConnection.PlayerCharacter.Speed * speedKoeff * 0.5f;
+            float new_position_x = playerConnection.CurrentPlayerCharacter.Position.X 
+                + MathF.Sin(brutto_angle * Functions.Deg2Rad) / 10f * playerConnection.CurrentPlayerCharacter.Speed * speedKoeff * 0.5f;
             
-            float new_position_z = playerConnection.PlayerCharacter.Position.Z 
-                + MathF.Cos(brutto_angle * Functions.Deg2Rad) / 10f * playerConnection.PlayerCharacter.Speed * speedKoeff * 0.5f;
+            float new_position_z = playerConnection.CurrentPlayerCharacter.Position.Z 
+                + MathF.Cos(brutto_angle * Functions.Deg2Rad) / 10f * playerConnection.CurrentPlayerCharacter.Speed * speedKoeff * 0.5f;
             
             if (lands.isColliding(new Vector3(new_position_x, 0, new_position_z), 0.3f)) { return; }
 
-            playerConnection.PlayerCharacter.SetNewOrientation(
+            playerConnection.CurrentPlayerCharacter.SetNewOrientation(
                 new_position_x,
-                lands.GetWalkableYCoord(new_position_x, playerConnection.PlayerCharacter.Position.Y, new_position_z),
+                lands.GetWalkableYCoord(new_position_x, playerConnection.CurrentPlayerCharacter.Position.Y, new_position_z),
                 new_position_z,
                 0, brutto_angle, 0);
 
-            //Console.WriteLine("current: " + playerConnection.PlayerCharacter.Position);
+            //Console.WriteLine("current: " + playerConnection.CurrentPlayerCharacter.Position);
         }
 
     }

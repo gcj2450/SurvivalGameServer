@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 
 namespace SurvivalGameServer
 {
@@ -11,7 +12,8 @@ namespace SurvivalGameServer
         public readonly int TicketID;
         public byte[] NetworkID { get; private set; }
         public byte[] SecretKey { get; private set; }
-        
+        public ListOfMovementPacketsFromServer ListOfMovementPackets { get; private set; }
+
         private Guid guid;
         private EndPoint endPoint;
 
@@ -20,19 +22,20 @@ namespace SurvivalGameServer
         private MovementPacketFromClient previousMovementPacket;
         private MovementPacketFromClient agregatePacket;
         private int possibleLostPackets;
-        private MovementPacketFromServer movementPacketFromServer;
+        public MovementPacketFromServer movementPacketFromServer { get; private set; }
 
         private Servers connections;
 
-        public PlayerCharacter PlayerCharacter { get; private set; }
+        public PlayerCharacter CurrentPlayerCharacter { get; private set; }
 
         public PlayerConnection(int ticket, PlayerCharacter playerCharacter)
         {
             TicketID = ticket;
-            PlayerCharacter = playerCharacter;
+            CurrentPlayerCharacter = playerCharacter;
 
             movementPacketsQueue = new ConcurrentQueue<MovementPacketFromClient>();
-            movementPacketFromServer = new MovementPacketFromServer();
+            movementPacketFromServer = new MovementPacketFromServer(CurrentPlayerCharacter.ObjectId);
+            ListOfMovementPackets = new ListOfMovementPacketsFromServer(1);
             connections = Servers.GetInstance();
         }
 
@@ -49,6 +52,7 @@ namespace SurvivalGameServer
             currentMovementPacket.Clear();
             previousMovementPacket.Clear();
             agregatePacket.Clear();
+            ListOfMovementPackets.Clear();
         }
 
         public void AddMovementPacket(MovementPacketFromClient movementPacket)
@@ -90,29 +94,41 @@ namespace SurvivalGameServer
                         //if (packetsToTake <= 0) break;
                     }
 
+                    
                     possibleLostPackets = 0;
                 }
              
                 if (currentMovementPacket.Horizontal != 0 || currentMovementPacket.Vertical != 0)
                 {
-                    handleMovement?.Invoke(this, currentMovementPacket);                    
-                    SendUpdatedMovementToPlayer(currentMovementPacket);                        
+                    handleMovement?.Invoke(this, currentMovementPacket);
+                    //SendUpdatedMovementToPlayer(currentMovementPacket);                        
+                    movementPacketFromServer.Update(
+                        CurrentPlayerCharacter.ObjectId,
+                        (uint)currentMovementPacket.PacketId,
+                        CurrentPlayerCharacter.Position.X,
+                        CurrentPlayerCharacter.Position.Y,
+                        CurrentPlayerCharacter.Position.Z,
+                        CurrentPlayerCharacter.Rotation.Y);
+
+                    
+                    //SendUpdatedMovementToPlayer();
+
                 }
 
                 movementPacketsQueue.Clear();
-
             }
             else if (previousMovementPacket.Horizontal != 0 || previousMovementPacket.Vertical != 0)
             {                
                 possibleLostPackets++;
-                //Console.WriteLine("PREDICTION!!! - " + possibleLostPackets);
+                
             }            
         }
 
-        public void SendUpdatedMovementToPlayer(MovementPacketFromClient packet)
+        public void SendUpdatedMovementToPlayer()
         {
             if (endPoint != null)
             {
+                /*
                 movementPacketFromServer.Update(
                 PlayerCharacter.ObjectId,
                 (uint)packet.PacketId,
@@ -122,27 +138,40 @@ namespace SurvivalGameServer
                 PlayerCharacter.Rotation.Y);
 
                 connections.SendUDPMovementPacketFromServer(movementPacketFromServer, SecretKey, endPoint);
+                */
+
+                //ListOfMovementPacketsFromServer packets = new ListOfMovementPacketsFromServer(1);
+
+                
+
+                ListOfMovementPackets.AddOrUpdate(movementPacketFromServer);
+
+                //Console.WriteLine(PlayerCharacter.ObjectId + " = " + movementPacketFromServer.PacketOrder);
+
+                connections.SendListOfMovementPacketsFromServer(ListOfMovementPackets, SecretKey, endPoint);
+
+                //connections.SendUDPMovementPacketFromServer(movementPacketFromServer, SecretKey, endPoint);
             }                
         }
 
         public async void SendMainPlayerData()
         {
             connections.SendTCPInitialPlayerData(
-                new PlayerDataInitial(PlayerCharacter), SecretKey, guid);
+                new PlayerDataInitial(CurrentPlayerCharacter), SecretKey, guid);
             
             for (float i = 0; i < 5000; i++)
             {
                 if (endPoint != null)
                 {
                     movementPacketFromServer.Update(
-                        PlayerCharacter.ObjectId,
+                        CurrentPlayerCharacter.ObjectId,
                         0,
-                        PlayerCharacter.Position.X,
-                        PlayerCharacter.Position.Y,
-                        PlayerCharacter.Position.Z,
-                        PlayerCharacter.Rotation.Y);
+                        CurrentPlayerCharacter.Position.X,
+                        CurrentPlayerCharacter.Position.Y,
+                        CurrentPlayerCharacter.Position.Z,
+                        CurrentPlayerCharacter.Rotation.Y);
 
-                    //Console.WriteLine("started at: " + PlayerCharacter.Position);
+                    //Console.WriteLine("started at: " + CurrentPlayerCharacter.Position);
 
                     connections.SendUDPMovementPacketFromServer(movementPacketFromServer, SecretKey, endPoint);
                     break;

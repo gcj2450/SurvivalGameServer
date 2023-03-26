@@ -10,8 +10,8 @@ namespace SurvivalGameServer
 {
     internal class Globals
     {
-        public const int TICKi = 60;
-        public const float TICKf = 0.06f;
+        public const int TICKi = 50;
+        public const float TICKf = 0.05f;
 
         public const int TCP_PORT = 3000;
         public const int UDP_PORT = 3001;
@@ -29,7 +29,8 @@ namespace SurvivalGameServer
             MoveFromServer = 2,
             GetClientUDPEndpoint = 3,
             InitialPlayerData = 4,
-            OperativePlayerData = 5
+            OperativePlayerData = 5,
+            ListOfMovementFromServer = 6
         }
 
         public static void InitServerGlobals()

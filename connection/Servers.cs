@@ -150,6 +150,10 @@ namespace SurvivalGameServer
 
             return false;
         }
+        public bool SendListOfMovementPacketsFromServer(ListOfMovementPacketsFromServer packets, byte[] secretKey, EndPoint endpoint)
+        {
+            return SendUDP(ProtobufSchemes.SerializeProtoBuf(packets), secretKey, endpoint, Globals.PacketCode.ListOfMovementFromServer);
+        }
 
         public bool SendUDPMovementPacketFromServer(MovementPacketFromServer packet, byte[] secretKey, EndPoint endpoint)
         {

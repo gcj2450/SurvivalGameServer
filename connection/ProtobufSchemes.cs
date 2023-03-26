@@ -100,11 +100,11 @@ namespace SurvivalGameServer
     }
 
     [ProtoContract]
-    public struct MovementPacketFromServer
+    public class MovementPacketFromServer
     {
-        public MovementPacketFromServer(uint objectId)
+        public MovementPacketFromServer(long objId)
         {
-            ObjectId = objectId;
+            ObjectId = objId;
             PacketOrder = 0;
             PositionX = 0;
             PositionY = 0;
@@ -116,6 +116,7 @@ namespace SurvivalGameServer
 
         public void Update(long objectId, uint packetId, float positionX, float positionY, float positionZ, float rotationY)
         {
+            
             ObjectId = objectId;
             PacketOrder = packetId;
             PositionX = positionX;
@@ -124,6 +125,7 @@ namespace SurvivalGameServer
             RotationX = 0;
             RotationY = rotationY;
             RotationZ = 0;
+
         }
 
         [ProtoMember(1)]
@@ -143,6 +145,36 @@ namespace SurvivalGameServer
         [ProtoMember(8)]
         public float RotationZ { get; set; }
 
+    }
+
+    [ProtoContract]
+    public struct ListOfMovementPacketsFromServer
+    {
+        public ListOfMovementPacketsFromServer(int i)
+        {
+            ListOfPackets = new Dictionary<long, MovementPacketFromServer>();            
+        }
+
+        public void AddOrUpdate(MovementPacketFromServer packet)
+        {            
+            if (!ListOfPackets.ContainsKey(packet.ObjectId))
+            {
+                ListOfPackets.Add(packet.ObjectId, packet);
+            }
+            else
+            {
+                ListOfPackets[packet.ObjectId] = packet;
+            }
+        }
+
+        public void Clear()
+        {
+            ListOfPackets.Clear();
+        }
+
+
+        [ProtoMember(1)]        
+        public Dictionary<long, MovementPacketFromServer> ListOfPackets;
     }
 
     [ProtoContract]
