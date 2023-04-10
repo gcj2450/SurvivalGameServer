@@ -32,18 +32,25 @@ namespace SurvivalGameServer
             {
                 
                 playerCharacters[i].Connection.HandleMovementPacketsQueue(SetPositionForPlayerCharacter);
-                
+                playerCharacters[i].Connection.ListOfMovementPackets.Clear();
+
                 for (int j = 0; j < playerCharacters.Count; j++)
                 {
-                    if (playerCharacters[i].ObjectId != playerCharacters[j].ObjectId)
-                    {
+                    //if (playerCharacters[j].Connection.IsMovementDirty)
+                    //{
+                        //playerCharacters[j].Connection.IsMovementDirty = false;
                         playerCharacters[i].Connection.ListOfMovementPackets.AddOrUpdate(playerCharacters[j].Connection.movementPacketFromServer);
-                    }
+                    //}
                 }
                 
+                if (playerCharacters[i].Connection.ListOfMovementPackets.ListOfPackets.Count > 0) playerCharacters[i].Connection.SendUpdatedMovementToPlayer();
 
-                playerCharacters[i].Connection.SendUpdatedMovementToPlayer();
+                
+            }
 
+            for (int i = 0; i < playerCharacters.Count; i++)
+            {
+                playerCharacters[i].Connection.IsMovementDirty = false;
             }
         }
 
@@ -73,10 +80,10 @@ namespace SurvivalGameServer
             float brutto_angle = MathF.Atan2(movementPacket.Horizontal, movementPacket.Vertical) * Functions.is180_pi;
 
             float new_position_x = playerConnection.CurrentPlayerCharacter.Position.X 
-                + MathF.Sin(brutto_angle * Functions.Deg2Rad) / 10f * playerConnection.CurrentPlayerCharacter.Speed * speedKoeff * 0.5f;
+                + MathF.Sin(brutto_angle * Functions.Deg2Rad) / 10f * playerConnection.CurrentPlayerCharacter.Speed * speedKoeff * 0.75f;
             
             float new_position_z = playerConnection.CurrentPlayerCharacter.Position.Z 
-                + MathF.Cos(brutto_angle * Functions.Deg2Rad) / 10f * playerConnection.CurrentPlayerCharacter.Speed * speedKoeff * 0.5f;
+                + MathF.Cos(brutto_angle * Functions.Deg2Rad) / 10f * playerConnection.CurrentPlayerCharacter.Speed * speedKoeff * 0.75f;
             
             if (lands.isColliding(new Vector3(new_position_x, 0, new_position_z), 0.3f)) { return; }
 

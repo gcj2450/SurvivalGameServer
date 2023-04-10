@@ -22,6 +22,9 @@ namespace SurvivalGameServer
         private MovementPacketFromClient previousMovementPacket;
         private MovementPacketFromClient agregatePacket;
         private int possibleLostPackets;
+        private bool isZeroMovementPacketProcessed;
+        public bool IsMovementDirty;
+
         public MovementPacketFromServer movementPacketFromServer { get; private set; }
 
         private Servers connections;
@@ -37,6 +40,8 @@ namespace SurvivalGameServer
             movementPacketFromServer = new MovementPacketFromServer(CurrentPlayerCharacter.ObjectId);
             ListOfMovementPackets = new ListOfMovementPacketsFromServer(1);
             connections = Servers.GetInstance();
+            isZeroMovementPacketProcessed = false;
+            IsMovementDirty = false;
         }
 
         public void SetConnectionData(byte[] secretKey, Guid id)
@@ -58,7 +63,11 @@ namespace SurvivalGameServer
         public void AddMovementPacket(MovementPacketFromClient movementPacket)
         {
             //Console.WriteLine(movementPacket.PacketId + " = " + movementPacket.Horizontal + " = " + movementPacket.Vertical + " = " + Globals.GlobalTimer.ElapsedMilliseconds);
-            if (movementPacket.Horizontal >= 999) movementPacket.Horizontal = 0;            
+            if (movementPacket.Horizontal == 999.9f || movementPacket.Vertical == 0)
+            {                
+                movementPacket.Horizontal = 0;
+            }
+                            
             movementPacketsQueue.Enqueue(movementPacket);
         }
 
@@ -109,10 +118,21 @@ namespace SurvivalGameServer
                         CurrentPlayerCharacter.Position.Y,
                         CurrentPlayerCharacter.Position.Z,
                         CurrentPlayerCharacter.Rotation.Y);
-
                     
-                    //SendUpdatedMovementToPlayer();
-
+                    IsMovementDirty = true;
+                    isZeroMovementPacketProcessed = false;
+                }
+                else
+                {
+                    movementPacketFromServer.Update(
+                        CurrentPlayerCharacter.ObjectId,
+                        (uint)currentMovementPacket.PacketId,
+                        0,
+                        0,
+                        0,
+                        0);
+                    IsMovementDirty = true;
+                    
                 }
 
                 movementPacketsQueue.Clear();
@@ -127,29 +147,10 @@ namespace SurvivalGameServer
         public void SendUpdatedMovementToPlayer()
         {
             if (endPoint != null)
-            {
-                /*
-                movementPacketFromServer.Update(
-                PlayerCharacter.ObjectId,
-                (uint)packet.PacketId,
-                PlayerCharacter.Position.X,
-                PlayerCharacter.Position.Y,
-                PlayerCharacter.Position.Z,
-                PlayerCharacter.Rotation.Y);
-
-                connections.SendUDPMovementPacketFromServer(movementPacketFromServer, SecretKey, endPoint);
-                */
-
-                //ListOfMovementPacketsFromServer packets = new ListOfMovementPacketsFromServer(1);
-
-                
-
-                ListOfMovementPackets.AddOrUpdate(movementPacketFromServer);
-
+            {                
+                //ListOfMovementPackets.AddOrUpdate(movementPacketFromServer);
                 //Console.WriteLine(PlayerCharacter.ObjectId + " = " + movementPacketFromServer.PacketOrder);
-
                 connections.SendListOfMovementPacketsFromServer(ListOfMovementPackets, SecretKey, endPoint);
-
                 //connections.SendUDPMovementPacketFromServer(movementPacketFromServer, SecretKey, endPoint);
             }                
         }
