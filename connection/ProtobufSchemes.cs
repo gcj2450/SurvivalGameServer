@@ -31,13 +31,15 @@ namespace SurvivalGameServer
 
         public static T DeserializeProtoBuf<T>(byte[] data, EndPoint endPoint)
         {
+            T result = default;
+
             try
             {
                 using (var stream = new MemoryStream(data))
                 {
                     
 
-                    return Serializer.Deserialize<T>(stream);
+                    result = Serializer.Deserialize<T>(stream);
                 }
             }
             catch (Exception ex)
@@ -46,7 +48,7 @@ namespace SurvivalGameServer
                 Globals.Logger.Write(Serilog.Events.LogEventLevel.Error, ex.ToString());
             }
 
-            T result = default;
+            
             return result;
         }
     }
@@ -71,7 +73,7 @@ namespace SurvivalGameServer
     }
 
     [ProtoContract]//data from client: what controls are pressed
-    public struct MovementPacketFromClient
+    public class MovementPacketFromClient
     {
         [ProtoMember(1)]
         public int PacketId { get; set; }
@@ -88,6 +90,14 @@ namespace SurvivalGameServer
             Horizontal = horizontal;
             Vertical = vertical;
             isActionButtonOnePressed = isOnePressed;
+        }
+
+        public MovementPacketFromClient()
+        {
+            PacketId = 0;
+            Horizontal = 0;
+            Vertical = 0;
+            isActionButtonOnePressed = false;
         }
 
         public void Clear()

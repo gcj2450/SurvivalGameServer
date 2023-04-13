@@ -35,16 +35,11 @@ namespace SurvivalGameServer
                 playerCharacters[i].Connection.ListOfMovementPackets.Clear();
 
                 for (int j = 0; j < playerCharacters.Count; j++)
-                {
-                    //if (playerCharacters[j].Connection.IsMovementDirty)
-                    //{
-                        //playerCharacters[j].Connection.IsMovementDirty = false;
-                        playerCharacters[i].Connection.ListOfMovementPackets.AddOrUpdate(playerCharacters[j].Connection.movementPacketFromServer);
-                    //}
+                {   
+                    playerCharacters[i].Connection.ListOfMovementPackets.AddOrUpdate(playerCharacters[j].Connection.movementPacketFromServer);                    
                 }
                 
                 if (playerCharacters[i].Connection.ListOfMovementPackets.ListOfPackets.Count > 0) playerCharacters[i].Connection.SendUpdatedMovementToPlayer();
-
                 
             }
 

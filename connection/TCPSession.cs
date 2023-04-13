@@ -14,6 +14,7 @@ namespace SurvivalGameServer
 
         public TCPSession(TcpServer server) : base(server) 
         {
+            
             receivedDataHandler = new ReceivedDataHandler();
         }
         

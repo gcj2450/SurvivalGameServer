@@ -6,7 +6,11 @@ namespace SurvivalGameServer
 {
     class TCPServer : TcpServer
     {
-        public TCPServer(IPAddress address, int port) : base(address, port) { }
+        public TCPServer(IPAddress address, int port) : base(address, port) 
+        {
+            
+
+        }
 
         protected override TcpSession CreateSession() 
         {            

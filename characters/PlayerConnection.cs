@@ -35,7 +35,9 @@ namespace SurvivalGameServer
         {
             TicketID = ticket;
             CurrentPlayerCharacter = playerCharacter;
-
+            previousMovementPacket = new MovementPacketFromClient();
+            currentMovementPacket = new MovementPacketFromClient();
+            agregatePacket = new MovementPacketFromClient();
             movementPacketsQueue = new ConcurrentQueue<MovementPacketFromClient>();
             movementPacketFromServer = new MovementPacketFromServer(CurrentPlayerCharacter.ObjectId);
             ListOfMovementPackets = new ListOfMovementPacketsFromServer(1);
@@ -62,8 +64,9 @@ namespace SurvivalGameServer
 
         public void AddMovementPacket(MovementPacketFromClient movementPacket)
         {
+            if (movementPacket == null) return;
             //Console.WriteLine(movementPacket.PacketId + " = " + movementPacket.Horizontal + " = " + movementPacket.Vertical + " = " + Globals.GlobalTimer.ElapsedMilliseconds);
-            if (movementPacket.Horizontal == 999.9f || movementPacket.Vertical == 0)
+            if (movementPacket.Horizontal == 999.9f && movementPacket.Vertical == 0)
             {                
                 movementPacket.Horizontal = 0;
             }
@@ -147,11 +150,9 @@ namespace SurvivalGameServer
         public void SendUpdatedMovementToPlayer()
         {
             if (endPoint != null)
-            {                
-                //ListOfMovementPackets.AddOrUpdate(movementPacketFromServer);
-                //Console.WriteLine(PlayerCharacter.ObjectId + " = " + movementPacketFromServer.PacketOrder);
-                connections.SendListOfMovementPacketsFromServer(ListOfMovementPackets, SecretKey, endPoint);
-                //connections.SendUDPMovementPacketFromServer(movementPacketFromServer, SecretKey, endPoint);
+            {
+                connections.SendListOfMovementPacketsFromServerUDP(ListOfMovementPackets, SecretKey, endPoint);             
+                //connections.SendListOfMovementPacketsFromServerTCP(ListOfMovementPackets, SecretKey, guid);
             }                
         }
 
