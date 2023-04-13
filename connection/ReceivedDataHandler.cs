@@ -45,6 +45,14 @@ namespace SurvivalGameServer
                         Globals.Logger.Write(Serilog.Events.LogEventLevel.Information,
                         $"received UDP endpoint from {endpoint}");
                         break;
+
+                    case Globals.PacketCode.PointFromClient:
+                        Encryption.Decode(ref packet, Globals.ActivePlayersByNetworID[networkID].SecretKey);
+                        Globals.ActivePlayersByNetworID[networkID]
+                            .SetNewPointToMove(ProtobufSchemes.DeserializeProtoBuf<PlayerPointFromClient>(packet, endpoint));
+                        //Globals.ActivePlayersByNetworID[networkID]
+                        //    .AddMovementPacket(ProtobufSchemes.DeserializeProtoBuf<MovementPacketFromClient>(packet, endpoint));
+                        break;
                 }
 
 

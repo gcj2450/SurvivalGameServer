@@ -24,8 +24,26 @@ namespace SurvivalGameServer
         private int possibleLostPackets;
         private bool isZeroMovementPacketProcessed;
         public bool IsMovementDirty;
+        private uint packet;
 
-        public MovementPacketFromServer movementPacketFromServer { get; private set; }
+        private MovementPacketFromServer movementPacketFromServer;
+        public MovementPacketFromServer MovementPacketFromServer
+        {
+            get 
+            {
+                packet++;
+                movementPacketFromServer = new MovementPacketFromServer(                    
+                        CurrentPlayerCharacter.ObjectId,
+                        packet,
+                        CurrentPlayerCharacter.Position.X,
+                        CurrentPlayerCharacter.Position.Y,
+                        CurrentPlayerCharacter.Position.Z,
+                        CurrentPlayerCharacter.Rotation.Y); 
+                return movementPacketFromServer;
+            }            
+        }
+ 
+
 
         private Servers connections;
 
@@ -74,6 +92,12 @@ namespace SurvivalGameServer
             movementPacketsQueue.Enqueue(movementPacket);
         }
 
+        public void SetNewPointToMove(PlayerPointFromClient pointPacket)
+        {
+            CurrentPlayerCharacter.SetNewPointToMove(pointPacket.GetCurrentVector());
+        }
+
+        /*
         public void HandleMovementPacketsQueue(Action<PlayerConnection, MovementPacketFromClient> handleMovement)
         {
             int movementPacketsQueueCount = movementPacketsQueue.Count;
@@ -146,6 +170,7 @@ namespace SurvivalGameServer
                 
             }            
         }
+        */
 
         public void SendUpdatedMovementToPlayer()
         {

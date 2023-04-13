@@ -30,7 +30,8 @@ namespace SurvivalGameServer
             GetClientUDPEndpoint = 3,
             InitialPlayerData = 4,
             OperativePlayerData = 5,
-            ListOfMovementFromServer = 6
+            ListOfMovementFromServer = 6,
+            PointFromClient = 7
         }
 
         public static void InitServerGlobals()

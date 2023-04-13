@@ -31,12 +31,12 @@ namespace SurvivalGameServer
             for (int i = 0; i < playerCharacters.Count; i++)
             {
                 
-                playerCharacters[i].Connection.HandleMovementPacketsQueue(SetPositionForPlayerCharacter);
+                //playerCharacters[i].Connection.HandleMovementPacketsQueue(SetPositionForPlayerCharacter);
                 playerCharacters[i].Connection.ListOfMovementPackets.Clear();
 
                 for (int j = 0; j < playerCharacters.Count; j++)
                 {   
-                    playerCharacters[i].Connection.ListOfMovementPackets.AddOrUpdate(playerCharacters[j].Connection.movementPacketFromServer);                    
+                    playerCharacters[i].Connection.ListOfMovementPackets.AddOrUpdate(playerCharacters[j].Connection.MovementPacketFromServer);                    
                 }
                 
                 if (playerCharacters[i].Connection.ListOfMovementPackets.ListOfPackets.Count > 0) playerCharacters[i].Connection.SendUpdatedMovementToPlayer();
@@ -63,6 +63,8 @@ namespace SurvivalGameServer
             if (!playerCharacters.Contains(character)) playerCharacters.Add(character);
         }
 
+
+        /*
         public void SetPositionForPlayerCharacter(PlayerConnection playerConnection, MovementPacketFromClient movementPacket)
         {
             //Console.WriteLine("packet proccesed: " + movementPacket.PacketId + " = " + movementPacket.Horizontal + " = " + movementPacket.Vertical);
@@ -90,6 +92,7 @@ namespace SurvivalGameServer
 
             //Console.WriteLine("current: " + playerConnection.CurrentPlayerCharacter.Position);
         }
+        */
 
     }
 }

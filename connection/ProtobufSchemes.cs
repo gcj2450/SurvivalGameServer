@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Numerics;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -110,7 +112,7 @@ namespace SurvivalGameServer
     }
 
     [ProtoContract]
-    public class MovementPacketFromServer
+    public struct MovementPacketFromServer
     {
         public MovementPacketFromServer(long objId)
         {
@@ -127,6 +129,20 @@ namespace SurvivalGameServer
         public void Update(long objectId, uint packetId, float positionX, float positionY, float positionZ, float rotationY)
         {
             
+            ObjectId = objectId;
+            PacketOrder = packetId;
+            PositionX = positionX;
+            PositionY = positionY;
+            PositionZ = positionZ;
+            RotationX = 0;
+            RotationY = rotationY;
+            RotationZ = 0;
+
+        }
+
+        public MovementPacketFromServer(long objectId, uint packetId, float positionX, float positionY, float positionZ, float rotationY)
+        {
+
             ObjectId = objectId;
             PacketOrder = packetId;
             PositionX = positionX;
@@ -221,5 +237,35 @@ namespace SurvivalGameServer
         public float RotationY { get; set; }
         [ProtoMember(9)]
         public float RotationZ { get; set; }
+    }
+
+    [ProtoContract]
+    public struct PlayerPointFromClient
+    {
+        public PlayerPointFromClient()
+        {            
+            PositionX = 0;
+            PositionY = 0;
+            PositionZ = 0;
+        }
+
+        public PlayerPointFromClient(float positionX, float positionY, float positionZ)
+        {
+            PositionX = positionX;
+            PositionY = positionY;
+            PositionZ = positionZ;
+        }
+
+        public Vector3 GetCurrentVector()
+        {
+            return new Vector3(PositionX, PositionY, PositionZ);
+        }
+
+        [ProtoMember(1)]       
+        public float PositionX { get; set; }
+        [ProtoMember(2)]
+        public float PositionY { get; set; }
+        [ProtoMember(3)]
+        public float PositionZ { get; set; }        
     }
 }

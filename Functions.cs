@@ -25,6 +25,19 @@ namespace SurvivalGameServer
             }
         }
 
+        public static Vector3 Normalize(Vector3 vector)
+        {
+            float find_max = vector3_magnitude_unity(vector.X, vector.Y, vector.Z);
+            if (find_max > 0.00001f)
+            {
+                return new Vector3(vector.X / find_max, vector.Y / find_max, vector.Z / find_max);// vector_axis = new float[] { (vector_axis[0] / find_max), (vector_axis[1] / find_max), (vector_axis[2] / find_max) };
+            }
+            else
+            {
+                return Vector3.Zero;
+            }
+        }
+
         public static float vector3_magnitude_unity(float x_axis_1, float y_axis_1, float z_axis_1)
         {
             return MathF.Sqrt(x_axis_1 * x_axis_1 + y_axis_1 * y_axis_1 + z_axis_1 * z_axis_1);
