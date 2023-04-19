@@ -120,13 +120,12 @@ namespace SurvivalGameServer
             PacketOrder = 0;
             PositionX = 0;
             PositionY = 0;
-            PositionZ = 0;
-            RotationX = 0;
+            PositionZ = 0;            
             RotationY = 0;
-            RotationZ = 0;
+            AnimationID = 0;
         }
 
-        public void Update(long objectId, uint packetId, float positionX, float positionY, float positionZ, float rotationY)
+        public void Update(long objectId, uint packetId, float positionX, float positionY, float positionZ, float rotationY, byte animation)
         {
             
             ObjectId = objectId;
@@ -134,13 +133,11 @@ namespace SurvivalGameServer
             PositionX = positionX;
             PositionY = positionY;
             PositionZ = positionZ;
-            RotationX = 0;
             RotationY = rotationY;
-            RotationZ = 0;
-
+            AnimationID = animation;
         }
 
-        public MovementPacketFromServer(long objectId, uint packetId, float positionX, float positionY, float positionZ, float rotationY)
+        public MovementPacketFromServer(long objectId, uint packetId, float positionX, float positionY, float positionZ, float rotationY, byte animation)
         {
 
             ObjectId = objectId;
@@ -148,10 +145,8 @@ namespace SurvivalGameServer
             PositionX = positionX;
             PositionY = positionY;
             PositionZ = positionZ;
-            RotationX = 0;
             RotationY = rotationY;
-            RotationZ = 0;
-
+            AnimationID = animation;
         }
 
         [ProtoMember(1)]
@@ -163,13 +158,11 @@ namespace SurvivalGameServer
         [ProtoMember(4)]
         public float PositionY { get; set; }
         [ProtoMember(5)]
-        public float PositionZ { get; set; }
+        public float PositionZ { get; set; }        
         [ProtoMember(6)]
-        public float RotationX { get; set; }
-        [ProtoMember(7)]
         public float RotationY { get; set; }
-        [ProtoMember(8)]
-        public float RotationZ { get; set; }
+        [ProtoMember(7)]
+        public byte AnimationID { get; set; }
 
     }
 

@@ -38,7 +38,8 @@ namespace SurvivalGameServer
                         CurrentPlayerCharacter.Position.X,
                         CurrentPlayerCharacter.Position.Y,
                         CurrentPlayerCharacter.Position.Z,
-                        CurrentPlayerCharacter.Rotation.Y); 
+                        CurrentPlayerCharacter.Rotation.Y,
+                        CurrentPlayerCharacter.AnimationId); 
                 return movementPacketFromServer;
             }            
         }
@@ -196,7 +197,9 @@ namespace SurvivalGameServer
                         CurrentPlayerCharacter.Position.X,
                         CurrentPlayerCharacter.Position.Y,
                         CurrentPlayerCharacter.Position.Z,
-                        CurrentPlayerCharacter.Rotation.Y);
+                        CurrentPlayerCharacter.Rotation.Y,
+                        CurrentPlayerCharacter.AnimationId
+                        );
 
                     //Console.WriteLine("started at: " + CurrentPlayerCharacter.Position);
 

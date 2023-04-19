@@ -22,6 +22,7 @@ namespace SurvivalGameServer
         {
             //Console.WriteLine("Incoming: " + Encoding.UTF8.GetString(buffer, (int)offset, (int)size) + " = " + Id);
             //Console.WriteLine(endpoint.ToString());
+            //Console.WriteLine("udp in: " + Globals.GlobalTimer.ElapsedMilliseconds);
             receivedDataHandler.HandleData(new ReadOnlySpan<byte>(buffer, 0, (int)size), Id, endpoint);
             ReceiveAsync();
         }

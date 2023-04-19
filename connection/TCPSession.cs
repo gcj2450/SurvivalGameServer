@@ -40,7 +40,7 @@ namespace SurvivalGameServer
             //Console.WriteLine("Incoming: " + message);
             //Console.WriteLine(size);
             //Console.WriteLine(string.Join('=', new ReadOnlySpan<byte>(buffer, (int)offset, (int)size).ToArray()));
-
+            //Console.WriteLine("tcp in: " + Globals.GlobalTimer.ElapsedMilliseconds);
             receivedDataHandler.HandleData(new ReadOnlySpan<byte>(buffer, 0, (int)size), Id, Socket.RemoteEndPoint);
         }
 

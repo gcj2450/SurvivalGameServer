@@ -112,8 +112,11 @@ namespace SurvivalGameServer
 
                 Position = Functions.Lerp(startPoint, point, i / distance);
                 //Console.WriteLine(normalVector + " = " + Rotation);
+                AnimationId = 1;
                 await Task.Delay(50);
             }
+
+            AnimationId = 0;
         }
     }
 }
