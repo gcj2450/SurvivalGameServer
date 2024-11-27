@@ -1,0 +1,1 @@
+Unity3d client for farm/survival based MMORPG. Uses Netcoreserver for transport, protobuf-net for serialization, RSA for encryption
